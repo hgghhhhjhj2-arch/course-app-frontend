@@ -7,21 +7,23 @@
       @click="$emit('close')"
     ></div>
 
-    <!-- حاوية القائمة الجانبية (Sidebar) - بدون overflow-x-hidden حتى لا يقص زر الحافة -->
+    <!-- حاوية القائمة الجانبية (Sidebar) - كبسولة عائمة بتصميم Pill Dock مستوحى من اللوحة الحديثة -->
     <aside
       :class="[
-        'bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col select-none transition-all duration-300 ease-in-out relative',
+        'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex flex-col select-none transition-all duration-300 ease-in-out relative',
         // العرض حسب حالة الطي / الفتح
         isCollapsed ? 'w-20' : 'w-64 lg:w-72',
-        // للموبايل: Fixed overlay | للديسك توب: داخل فلو الصفحة تحت الهيدر
-        'fixed inset-y-0 right-0 z-50 lg:static lg:z-auto lg:h-[calc(100vh-4rem)] lg:sticky lg:top-16 shrink-0',
-        isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-full lg:translate-x-0'
+        // كبسولة عائمة بحواف راونديد ثلاثية
+        'rounded-2xl sm:rounded-3xl shadow-sm dark:shadow-2xl h-full shrink-0',
+        // للموبايل: Fixed overlay | للديسك توب: داخل فلو الصفحة
+        'fixed inset-y-3 right-3 z-50 lg:static lg:z-auto',
+        isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-[120%] lg:translate-x-0'
       ]"
     >
       <!-- زر طي / فتح القائمة على حافة السايدبار (Edge Toggle Button - Desktop) -->
       <button
         type="button"
-        class="hidden lg:flex absolute -left-3.5 top-5 w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full items-center justify-center text-slate-500 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-md cursor-pointer z-50 transition-transform duration-200 hover:scale-110"
+        class="hidden lg:flex absolute -left-3.5 top-6 w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full items-center justify-center text-slate-500 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-md cursor-pointer z-50 transition-transform duration-200 hover:scale-110"
         :title="isCollapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'"
         @click="$emit('toggle-collapse')"
       >
@@ -39,19 +41,19 @@
         <X class="w-5 h-5" />
       </button>
 
-      <!-- 1. الجزء العلوي: الصورة الشخصية (دائرة في الحالتين) + الاسم + الرول -->
+      <!-- 1. الجزء العلوي: الصورة الشخصية (دائرة) + الاسم + الرول -->
       <div
         :class="[
-          'flex flex-col items-center text-center border-b border-slate-100 dark:border-slate-800 bg-gradient-to-b from-slate-50/60 to-white dark:from-slate-900/90 dark:to-slate-900 transition-all duration-300',
-          isCollapsed ? 'py-3 px-2' : 'py-4 px-5'
+          'flex flex-col items-center text-center border-b border-slate-100 dark:border-slate-800/80 transition-all duration-300 shrink-0',
+          isCollapsed ? 'py-4 px-2' : 'py-4 px-4'
         ]"
       >
-        <!-- صورة المستخدم: دائرة كاملة في كلا الحالتين -->
+        <!-- صورة المستخدم (دائرة كاملة أنيقة كرمز أساسي مثل الأيقونة العلوية في الصورة) -->
         <div class="relative transition-all duration-300">
           <div
             :class="[
               'p-0.5 shadow-md bg-gradient-to-tr from-primary-600 to-primary-700 rounded-full transition-all duration-300',
-              isCollapsed ? 'w-11 h-11' : 'w-16 h-16'
+              isCollapsed ? 'w-11 h-11' : 'w-14 h-14'
             ]"
           >
             <div
@@ -66,7 +68,7 @@
               <div
                 v-else
                 class="w-full h-full bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black transition-all rounded-full"
-                :class="isCollapsed ? 'text-xs' : 'text-lg'"
+                :class="isCollapsed ? 'text-xs' : 'text-base'"
               >
                 {{ userInitials }}
               </div>
@@ -77,7 +79,7 @@
           <span
             :class="[
               'absolute rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 transition-all',
-              isCollapsed ? 'bottom-0 left-0 w-2.5 h-2.5' : 'bottom-0.5 left-0.5 w-3.5 h-3.5'
+              isCollapsed ? 'bottom-0 left-0 w-2.5 h-2.5' : 'bottom-0.5 left-0.5 w-3 h-3'
             ]"
           ></span>
         </div>
@@ -85,21 +87,21 @@
         <!-- الاسم والرول (يظهران بسلاسة عند فتح السايدبار) -->
         <div
           class="transition-all duration-200"
-          :class="isCollapsed ? 'opacity-0 h-0 overflow-hidden pointer-events-none mt-0' : 'opacity-100 mt-2.5'"
+          :class="isCollapsed ? 'opacity-0 h-0 overflow-hidden pointer-events-none mt-0' : 'opacity-100 mt-2'"
         >
           <h2 class="text-sm font-black text-slate-800 dark:text-slate-100 font-heading leading-tight max-w-[200px] truncate">
             {{ authStore.user?.fullName || 'مستخدم المنظومة' }}
           </h2>
-          <div class="mt-1.5">
-            <span class="inline-block px-3 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950/60 border border-primary-100 dark:border-primary-900/80 text-[11px] font-bold text-primary-800 dark:text-primary-300">
+          <div class="mt-1">
+            <span class="inline-block px-2.5 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950/60 border border-primary-100 dark:border-primary-900/80 text-[10px] font-bold text-primary-800 dark:text-primary-300">
               {{ roleLabel }}
             </span>
           </div>
         </div>
       </div>
 
-      <!-- 2. السكشن الأساسي: روابط صفحات النظام (موقع الأيقونة ثابت تماماً) -->
-      <nav class="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar px-3 py-3 overflow-x-hidden">
+      <!-- 2. السكشن الأساسي: رقاقات الأيقونات الدائرية المستوحاة من الصورة -->
+      <nav class="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar px-2.5 py-3 overflow-x-hidden">
         <div v-for="group in navGroups" :key="group.title" class="mb-3">
           <!-- عنوان المجموعة -->
           <span
@@ -110,29 +112,47 @@
             {{ group.title }}
           </span>
 
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <RouterLink
               v-for="item in group.items"
               :key="item.path"
               :to="item.path"
               :title="isCollapsed ? item.label : ''"
               :class="[
-                'flex items-center h-11 rounded-xl transition-all duration-200 cursor-pointer group select-none relative',
-                isCollapsed ? 'justify-center px-0' : 'px-3 gap-3',
+                'flex items-center transition-all duration-200 cursor-pointer group select-none relative',
+                isCollapsed
+                  ? 'w-11 h-11 rounded-full mx-auto justify-center'
+                  : 'w-full h-11 px-2 rounded-2xl gap-2.5',
                 isActive(item.path)
-                  ? 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent'
+                  ? isCollapsed
+                    ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
+                    : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+                  : isCollapsed
+                    ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
               ]"
               @click="$emit('close')"
             >
-              <!-- الأيقونة: في المنتصف تماماً عند الإغلاق -->
+              <!-- في حالة الفتح: أيقونة داخل رقاقة دائرية | في حالة الغلق: الأيقونة في المنتصف تماماً -->
+              <div
+                v-if="!isCollapsed"
+                :class="[
+                  'w-8 h-8 rounded-full shrink-0 flex items-center justify-center transition-colors',
+                  isActive(item.path)
+                    ? 'bg-primary-100 dark:bg-primary-500/25 text-primary-700 dark:text-primary-300'
+                    : 'bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 group-hover:text-slate-900 dark:group-hover:text-slate-100'
+                ]"
+              >
+                <component :is="item.icon" class="w-4 h-4 shrink-0" />
+              </div>
               <component
+                v-else
                 :is="item.icon"
                 class="w-5 h-5 shrink-0 transition-colors"
                 :class="[
                   isActive(item.path)
                     ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-slate-400 dark:text-slate-500 group-hover:text-primary-600 dark:group-hover:text-primary-400'
+                    : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
                 ]"
               />
 
@@ -148,33 +168,51 @@
         </div>
       </nav>
 
-      <!-- 3. الجزء السفلي: الإشعارات أولاً ثم الإعدادات تحتها (متوسطن عند الإغلاق) -->
+      <!-- 3. الجزء السفلي: الإشعارات أولاً ثم الإعدادات تحتها (كبسولات دائرية) -->
       <div
-        class="border-t border-slate-100 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/50 p-3 space-y-1 overflow-x-hidden"
+        class="border-t border-slate-100 dark:border-slate-800/80 p-3 space-y-1.5 overflow-x-hidden shrink-0"
       >
         <!-- الإشعارات (فوق الإعدادات) -->
         <RouterLink
           to="/affairs/attendance"
           :title="isCollapsed ? 'مركز الإشعارات' : ''"
           :class="[
-            'flex items-center h-10 rounded-xl transition-all duration-200 cursor-pointer relative group select-none',
-            isCollapsed ? 'justify-center px-0' : 'px-3 gap-3',
+            'flex items-center transition-all duration-200 cursor-pointer relative group select-none',
+            isCollapsed
+              ? 'w-11 h-11 rounded-full mx-auto justify-center'
+              : 'w-full h-10 px-2 rounded-2xl gap-2.5',
             isActive('/affairs/attendance')
-              ? 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent'
+              ? isCollapsed
+                ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
+                : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+              : isCollapsed
+                ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
           ]"
           @click="$emit('close')"
         >
-          <div class="relative flex items-center justify-center">
+          <!-- الأيقونة في وضع الفتح vs الغلق -->
+          <div
+            v-if="!isCollapsed"
+            :class="[
+              'w-7 h-7 rounded-full shrink-0 flex items-center justify-center transition-colors',
+              isActive('/affairs/attendance')
+                ? 'bg-primary-100 dark:bg-primary-500/25 text-primary-700 dark:text-primary-300'
+                : 'bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
+            ]"
+          >
+            <Bell class="w-3.5 h-3.5" />
+          </div>
+          <div v-else class="relative flex items-center justify-center">
             <Bell
-              class="w-4 h-4 transition-colors"
-              :class="isActive('/affairs/attendance') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-primary-600 dark:group-hover:text-primary-400'"
+              class="w-5 h-5 transition-colors"
+              :class="isActive('/affairs/attendance') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
             />
             <span
-              v-if="isCollapsed"
-              class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900"
+              class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900"
             ></span>
           </div>
+
           <span
             v-if="!isCollapsed"
             class="truncate text-xs font-bold whitespace-nowrap flex-1"
@@ -192,18 +230,35 @@
           to="/profile"
           :title="isCollapsed ? 'الإعدادات والملف الشخصي' : ''"
           :class="[
-            'flex items-center h-10 rounded-xl transition-all duration-200 cursor-pointer group select-none',
-            isCollapsed ? 'justify-center px-0' : 'px-3 gap-3',
+            'flex items-center transition-all duration-200 cursor-pointer group select-none',
+            isCollapsed
+              ? 'w-11 h-11 rounded-full mx-auto justify-center'
+              : 'w-full h-10 px-2 rounded-2xl gap-2.5',
             isActive('/profile')
-              ? 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent'
+              ? isCollapsed
+                ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
+                : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+              : isCollapsed
+                ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
           ]"
           @click="$emit('close')"
         >
-          <div class="flex items-center justify-center">
+          <div
+            v-if="!isCollapsed"
+            :class="[
+              'w-7 h-7 rounded-full shrink-0 flex items-center justify-center transition-colors',
+              isActive('/profile')
+                ? 'bg-primary-100 dark:bg-primary-500/25 text-primary-700 dark:text-primary-300'
+                : 'bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
+            ]"
+          >
+            <Settings class="w-3.5 h-3.5" />
+          </div>
+          <div v-else class="flex items-center justify-center">
             <Settings
-              class="w-4 h-4 transition-colors"
-              :class="isActive('/profile') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-primary-600 dark:group-hover:text-primary-400'"
+              class="w-5 h-5 transition-colors"
+              :class="isActive('/profile') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
             />
           </div>
           <span
