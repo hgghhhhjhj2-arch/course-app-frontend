@@ -14,19 +14,19 @@ export const useAuthStore = defineStore('auth', () => {
     parsedUser = null;
   }
 
-  // مستخدم تجريبي افتراضي لسهولة تصميم ومعاينة الهيدر والسايدبار
+  // مستخدم تجريبي افتراضي لمعاينة شؤون الدارسين
   const defaultUser = {
     id: 1,
-    fullName: 'المستخدم الحالي',
-    email: 'user@institute.local',
-    role: ROLES.COMMANDER, // يمكنك تغييره لمعاينة أي دور: Admin, Affairs, Trainee, Security, Commander
+    fullName: 'مسؤول شؤون الدارسين',
+    email: 'affairs@institute.local',
+    role: ROLES.AFFAIRS, // مفعل افتراضياً لمعاينة صفحات شؤون الدارسين
   };
 
   const user = ref(parsedUser || defaultUser);
 
   const isAuthenticated = computed(() => !!token.value);
 
-  const currentRole = computed(() => user.value?.role || ROLES.COMMANDER);
+  const currentRole = computed(() => user.value?.role || ROLES.AFFAIRS);
 
   const defaultHomePath = computed(() => {
     return DEFAULT_ROLE_ROUTES[currentRole.value] || '/dashboard';

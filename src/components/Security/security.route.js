@@ -10,13 +10,13 @@ export default [
       {
         path: 'gate-scan',
         name: 'GateScan',
-        component: () => import('./views/GateScanView.vue'),
+        component: () => import('./components/GateScanView.vue'),
         meta: { title: 'مسح تصاريح الـ QR' },
       },
       {
         path: 'gate-logs',
         name: 'SecurityGateLogs',
-        component: () => import('./views/GateLogsView.vue'),
+        component: () => import('./components/GateLogsView.vue'),
         meta: { title: 'سجل حركات اليوم' },
       },
     ],

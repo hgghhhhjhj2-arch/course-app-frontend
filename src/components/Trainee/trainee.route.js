@@ -10,19 +10,19 @@ export default [
       {
         path: 'applications',
         name: 'TraineeApplications',
-        component: () => import('./views/TraineeApplicationsView.vue'),
+        component: () => import('./components/TraineeApplicationsView.vue'),
         meta: { title: 'طلباتي وتصاريح الدخول' },
       },
       {
         path: 'courses',
         name: 'TraineeCourses',
-        component: () => import('./views/TraineeCoursesView.vue'),
+        component: () => import('./components/TraineeCoursesView.vue'),
         meta: { title: 'دورات الانعقاد المتاحة' },
       },
       {
         path: 'certificates',
         name: 'TraineeCertificates',
-        component: () => import('./views/TraineeCertificatesView.vue'),
+        component: () => import('./components/TraineeCertificatesView.vue'),
         meta: { title: 'شهاداتي المعتمدة' },
       },
     ],

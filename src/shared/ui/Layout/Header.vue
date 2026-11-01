@@ -42,9 +42,20 @@
       </div>
     </div>
 
-    <!-- الجزء الأيسر: الدارك مود، الإشعارات، وتسجيل الخروج (رقاقات دائرية وكبسولية) -->
+    <!-- الجزء الأيسر: ملء الشاشة، الدارك مود، الإشعارات، وتسجيل الخروج (رقاقات دائرية وكبسولية) -->
     <div class="flex items-center gap-2">
-      <!-- 1. أيقونة الدارك مود (رقاقة دائرية) -->
+      <!-- 1. زر ملء الشاشة (Fullscreen) -->
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full bg-slate-100/80 dark:bg-slate-800/60 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700 hover:text-primary-600 dark:hover:text-primary-400 transition-all cursor-pointer shadow-xs border border-transparent dark:border-slate-800"
+        :title="isFullscreen ? 'إنهاء ملء الشاشة' : 'ملء الشاشة'"
+        @click="toggleFullscreen"
+      >
+        <Minimize v-if="isFullscreen" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+        <Maximize v-else class="w-4 h-4" />
+      </button>
+
+      <!-- 2. أيقونة الدارك مود (رقاقة دائرية) -->
       <button
         type="button"
         class="w-10 h-10 rounded-full bg-slate-100/80 dark:bg-slate-800/60 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700 hover:text-amber-500 dark:hover:text-amber-400 transition-all cursor-pointer shadow-xs border border-transparent dark:border-slate-800"
@@ -55,7 +66,7 @@
         <Moon v-else class="w-4 h-4 text-slate-600" />
       </button>
 
-      <!-- 2. أيقونة الإشعارات (رقاقة دائرية مع شارة تنبيه) -->
+      <!-- 3. أيقونة الإشعارات (رقاقة دائرية مع شارة تنبيه) -->
       <div class="relative">
         <button
           type="button"
@@ -120,9 +131,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Menu, LogOut, Bell, Sun, Moon } from 'lucide-vue-next';
+import { Menu, LogOut, Bell, Sun, Moon, Maximize, Minimize } from 'lucide-vue-next';
 import { useAuthStore } from '@/components/Auth/stores/authStore';
 import { useTheme } from '@/shared/composables/useTheme';
 
@@ -133,6 +144,33 @@ const authStore = useAuthStore();
 const { theme, toggleTheme } = useTheme();
 
 const showNotifications = ref(false);
+const isFullscreen = ref(false);
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.warn('Error attempting to enable fullscreen:', err.message);
+    });
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch((err) => {
+        console.warn('Error attempting to exit fullscreen:', err.message);
+      });
+    }
+  }
+}
+
+function handleFullscreenChange() {
+  isFullscreen.value = !!document.fullscreenElement;
+}
+
+onMounted(() => {
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+});
 
 function handleLogout() {
   authStore.logout();

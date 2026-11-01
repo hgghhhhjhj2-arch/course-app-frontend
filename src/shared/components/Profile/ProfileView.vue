@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800">الملف الشخصي</h2>
-  </div>
+  <!-- عرض صفحة بيانات وسجل الدارس المشتركة لجميع المستخدمين والدارسين -->
+  <TraineeProfileView />
 </template>
 
 <script setup>
+import TraineeProfileView from '../TraineeProfile/TraineeProfileView.vue';
 </script>

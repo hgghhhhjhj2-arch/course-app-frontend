@@ -20,7 +20,7 @@ export const ROLE_LABELS = {
 export const DEFAULT_ROLE_ROUTES = {
   [ROLES.ADMIN]: '/admin/users',
   [ROLES.TRAINEE]: '/trainee/applications',
-  [ROLES.AFFAIRS]: '/affairs/applications',
+  [ROLES.AFFAIRS]: '/affairs/applications/applicants',
   [ROLES.SECURITY]: '/security/gate-scan',
   [ROLES.COMMANDER]: '/dashboard',
 };

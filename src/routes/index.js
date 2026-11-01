@@ -37,6 +37,12 @@ const routes = [
         component: () => import('@/shared/components/Profile/ProfileView.vue'),
         meta: { title: 'الملف الشخصي' },
       },
+      {
+        path: 'trainee-profile/:id?',
+        name: 'SharedTraineeProfile',
+        component: () => import('@/shared/components/TraineeProfile/TraineeProfileView.vue'),
+        meta: { title: 'سجل وبيانات الدارس' },
+      },
     ],
   },
 

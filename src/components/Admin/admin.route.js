@@ -10,19 +10,19 @@ export default [
       {
         path: 'users',
         name: 'AdminUsers',
-        component: () => import('./views/AdminUsersView.vue'),
+        component: () => import('./components/AdminUsersView.vue'),
         meta: { title: 'إدارة حسابات الموظفين' },
       },
       {
         path: 'halls',
         name: 'AdminHalls',
-        component: () => import('./views/AdminHallsView.vue'),
+        component: () => import('./components/AdminHallsView.vue'),
         meta: { title: 'إدارة القاعات والمعامل' },
       },
       {
         path: 'audit-logs',
         name: 'AdminAuditLogs',
-        component: () => import('./views/AdminAuditLogsView.vue'),
+        component: () => import('./components/AdminAuditLogsView.vue'),
         meta: { title: 'سجل تدقيق النظام' },
       },
     ],

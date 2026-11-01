@@ -1,0 +1,605 @@
+<template>
+  <div
+    v-if="isOpen && trainee"
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs select-none"
+    @click.self="$emit('close')"
+  >
+    <div class="relative w-full max-w-3xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col animate-scale-in">
+      <!-- 1. ترويسة المودال الموحدة -->
+      <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/80 shrink-0">
+        <div class="flex items-center gap-3">
+          <!-- الصورة الشخصية للدارس -->
+          <div class="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shrink-0 shadow-2xs">
+            <img
+              v-if="trainee.profilePhotoPath"
+              :src="trainee.profilePhotoPath"
+              :alt="trainee.fullName"
+              class="w-full h-full object-cover"
+            />
+            <span v-else class="text-sm font-black text-primary-700 dark:text-primary-300">
+              {{ initials }}
+            </span>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {{ trainee.fullName }}
+              </h3>
+              <!-- شارة الفئة المعتمدة -->
+              <span
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-2xs"
+                :class="categoryBadge.class"
+              >
+                {{ categoryBadge.label }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap items-center gap-2">
+              <span class="font-mono">الرقم القومي: {{ trainee.nationalId }}</span>
+              <span>•</span>
+              <span class="font-mono">{{ trainee.phone }}</span>
+              <span>•</span>
+              <span>{{ trainee.governorate }}</span>
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
+          title="إغلاق النافذة"
+          @click="$emit('close')"
+        >
+          <X class="w-4 h-4" />
+        </button>
+      </div>
+
+      <!-- 2. محتوى التمرير للمودال -->
+      <div class="p-4 sm:p-5 space-y-4 overflow-y-auto custom-scrollbar text-xs">
+        <!-- أ. بطاقة الدورة والطلب الحالي (Context) -->
+        <div
+          v-if="courseRound || application || log"
+          class="p-4 rounded-2xl bg-primary-50/40 dark:bg-primary-950/20 border border-primary-200/70 dark:border-primary-800/50 space-y-2.5"
+        >
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-primary-200/50 dark:border-primary-800/40">
+            <div class="flex items-center gap-2">
+              <BookOpen class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <strong class="font-black text-slate-800 dark:text-slate-100 text-xs sm:text-sm">
+                {{ courseRound?.courseName || 'الدورة التدريبية' }}
+              </strong>
+              <span v-if="courseRound?.roundNumber" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white dark:bg-slate-800 border border-primary-200 dark:border-primary-700 text-primary-800 dark:text-primary-300">
+                الدفعة {{ courseRound.roundNumber }}
+              </span>
+            </div>
+
+            <!-- كود الطلب / الحركة وشارة الحالة -->
+            <div class="flex items-center gap-2">
+              <span v-if="application?.code" class="font-mono font-bold text-slate-500 dark:text-slate-400 text-[11px]">
+                {{ application.code }}
+              </span>
+              <span
+                v-if="statusBadge"
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border"
+                :class="statusBadge.class"
+              >
+                {{ statusBadge.label }}
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-700 dark:text-slate-300">
+            <div v-if="courseRound?.hallName">
+              <span class="text-slate-400 block text-[11px]">مقر الانعقاد:</span>
+              <span class="font-bold flex items-center gap-1 mt-0.5">
+                <Building2 class="w-3.5 h-3.5 text-primary-600 shrink-0" />
+                <span>{{ courseRound.hallName }}</span>
+              </span>
+            </div>
+
+            <div v-if="courseRound?.instructorName">
+              <span class="text-slate-400 block text-[11px]">المحاضر المسؤول:</span>
+              <span class="font-bold flex items-center gap-1 mt-0.5">
+                <UserCheck class="w-3.5 h-3.5 text-primary-600 shrink-0" />
+                <span>{{ courseRound.instructorName }}</span>
+              </span>
+            </div>
+
+            <div v-if="courseRound?.timeRange">
+              <span class="text-slate-400 block text-[11px]">توقيت المحاضرات:</span>
+              <span class="font-mono font-bold flex items-center gap-1 mt-0.5">
+                <Clock class="w-3.5 h-3.5 text-primary-600 shrink-0" />
+                <span>{{ courseRound.timeRange }}</span>
+              </span>
+            </div>
+
+            <!-- الموقف المالي أو مهلة السداد -->
+            <div v-if="application?.appliedPrice">
+              <span class="text-slate-400 block text-[11px]">الرسوم المقررة للفئة:</span>
+              <span class="font-black text-emerald-700 dark:text-emerald-400 font-mono">
+                {{ formatCurrency(application.appliedPrice) }}
+              </span>
+            </div>
+
+            <div v-if="application?.paymentDueDate">
+              <span class="text-slate-400 block text-[11px]">مهلة السداد بالخزينة:</span>
+              <span class="font-mono font-bold text-slate-800 dark:text-slate-200">
+                {{ formatDate(application.paymentDueDate) }}
+              </span>
+            </div>
+
+            <div v-if="application?.receiptNumber">
+              <span class="text-slate-400 block text-[11px]">رقم إيصال السداد:</span>
+              <span class="font-mono font-bold text-slate-800 dark:text-slate-200">
+                {{ application.receiptNumber }}
+              </span>
+            </div>
+
+            <!-- في حالة البوابة: فرد الأمن والبوابة -->
+            <div v-if="log?.officer">
+              <span class="text-slate-400 block text-[11px]">فرد الأمن والبوابة:</span>
+              <span class="font-bold text-slate-800 dark:text-slate-200">
+                {{ log.officer.name }} ({{ log.officer.gateName }})
+              </span>
+            </div>
+
+            <div v-if="log?.reason">
+              <span class="text-slate-400 block text-[11px]">القرار الأمني المسجل:</span>
+              <span class="font-bold" :class="log.decision === 'Allowed' ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-400'">
+                {{ log.reason }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ب. شبكة بيانات البطاقة المدنية والتواصل -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-700">
+            <h4 class="font-black text-slate-800 dark:text-slate-100 text-xs flex items-center gap-1.5">
+              <IdCard class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <span>بيانات بطاقة الرقم القومي والحالة المدنية</span>
+            </h4>
+            <span
+              class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
+              :class="isIdExpired ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'"
+            >
+              {{ isIdExpired ? 'البطاقة منتهية' : 'البطاقة سارية' }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-700 dark:text-slate-200">
+            <div>
+              <span class="text-slate-400 block text-[11px]">الرقم القومي (14 رقماً):</span>
+              <strong class="font-mono font-black text-slate-800 dark:text-slate-100">{{ trainee.nationalId }}</strong>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">تاريخ الميلاد والسن:</span>
+              <span class="font-mono font-bold">{{ formatDate(trainee.dateOfBirth) }}</span>
+              <span v-if="trainee.dateOfBirth" class="text-primary-600 dark:text-primary-400 mr-1 font-bold">({{ age }})</span>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">سريان البطاقة حتى:</span>
+              <span class="font-mono font-bold" :class="{ 'text-rose-600': isIdExpired }">
+                {{ formatDate(trainee.nationalIdExpiryDate) }}
+              </span>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">النوع والديانة:</span>
+              <span class="font-bold">
+                {{ trainee.gender === 'Male' ? 'ذكر' : 'أنثى' }} • {{ trainee.religion === 'Muslim' ? 'مسلم' : 'مسيحي' }}
+              </span>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">الحالة الاجتماعية:</span>
+              <span class="font-bold">{{ getMaritalStatusLabel(trainee.maritalStatus) }}</span>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">المهنة المدونة بالبطاقة:</span>
+              <span class="font-bold truncate block" :title="trainee.occupation">{{ trainee.occupation || '—' }}</span>
+            </div>
+
+            <div class="sm:col-span-2">
+              <span class="text-slate-400 block text-[11px]">العنوان المدون بالبطاقة:</span>
+              <span class="font-bold">{{ trainee.address }} (محافظة {{ trainee.governorate }})</span>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block text-[11px]">رقم الهاتف للتواصل:</span>
+              <span class="font-mono font-bold text-primary-700 dark:text-primary-300">{{ trainee.phone }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ج. معرض المستندات المصورة المرفقة -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
+          <h4 class="font-black text-slate-800 dark:text-slate-100 text-xs flex items-center gap-1.5 pb-2 border-b border-slate-200 dark:border-slate-700">
+            <FileText class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+            <span>المستندات الرسمية المصورة المرفقة (انقر لتكبير أي مستند)</span>
+          </h4>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <!-- وجه البطاقة -->
+            <div
+              class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500 cursor-pointer transition-all group"
+              @click="activePreviewUrl = trainee.nationalIdFrontPhotoPath; previewTitle = 'وجه بطاقة الرقم القومي'"
+            >
+              <div class="h-20 rounded-lg bg-slate-100 dark:bg-slate-700 overflow-hidden relative mb-1.5 flex items-center justify-center">
+                <img
+                  v-if="trainee.nationalIdFrontPhotoPath"
+                  :src="trainee.nationalIdFrontPhotoPath"
+                  alt="وجه البطاقة"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <IdCard v-else class="w-6 h-6 text-slate-400" />
+                <div class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <Eye class="w-4 h-4" />
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 block text-center truncate">
+                وجه البطاقة
+              </span>
+            </div>
+
+            <!-- ظهر البطاقة -->
+            <div
+              class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500 cursor-pointer transition-all group"
+              @click="activePreviewUrl = trainee.nationalIdBackPhotoPath; previewTitle = 'ظهر بطاقة الرقم القومي'"
+            >
+              <div class="h-20 rounded-lg bg-slate-100 dark:bg-slate-700 overflow-hidden relative mb-1.5 flex items-center justify-center">
+                <img
+                  v-if="trainee.nationalIdBackPhotoPath"
+                  :src="trainee.nationalIdBackPhotoPath"
+                  alt="ظهر البطاقة"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <IdCard v-else class="w-6 h-6 text-slate-400" />
+                <div class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <Eye class="w-4 h-4" />
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 block text-center truncate">
+                ظهر البطاقة
+              </span>
+            </div>
+
+            <!-- شهادة المؤهل -->
+            <div
+              class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500 cursor-pointer transition-all group"
+              @click="activePreviewUrl = trainee.qualificationPhotoPath || application?.qualificationPhotoPath; previewTitle = 'شهادة المؤهل الدراسي'"
+            >
+              <div class="h-20 rounded-lg bg-slate-100 dark:bg-slate-700 overflow-hidden relative mb-1.5 flex items-center justify-center">
+                <img
+                  v-if="trainee.qualificationPhotoPath || application?.qualificationPhotoPath"
+                  :src="trainee.qualificationPhotoPath || application?.qualificationPhotoPath"
+                  alt="شهادة المؤهل"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <FileText v-else class="w-6 h-6 text-slate-400" />
+                <div class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <Eye class="w-4 h-4" />
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 block text-center truncate">
+                شهادة المؤهل
+              </span>
+            </div>
+
+            <!-- كارنيه إثبات الفئة -->
+            <div
+              v-if="trainee.categoryProofPhotoPath"
+              class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500 cursor-pointer transition-all group"
+              @click="activePreviewUrl = trainee.categoryProofPhotoPath; previewTitle = 'كارنيه إثبات الفئة / صلة القرابة'"
+            >
+              <div class="h-20 rounded-lg bg-slate-100 dark:bg-slate-700 overflow-hidden relative mb-1.5 flex items-center justify-center">
+                <img
+                  :src="trainee.categoryProofPhotoPath"
+                  alt="كارنيه الفئة"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <div class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <Eye class="w-4 h-4" />
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 block text-center truncate">
+                كارنيه إثبات الفئة
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. أسفل المودال: أزرار الإجراءات والزر المطلوب لفتح صفحة سجل الدارس المشترك -->
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+        <!-- زر الإغلاق -->
+        <button
+          type="button"
+          class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+          @click="$emit('close')"
+        >
+          إغلاق النافذة
+        </button>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- أ. الزر الأساسي: فتح السجل التدريبي الكامل للدارس في صفحة TraineeProfileView -->
+          <RouterLink
+            :to="profileUrl"
+            class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs hover:shadow-sm"
+            title="فتح السجل التدريبي الشامل للدارس بكافة دوراته الحالية والسابقة وشهاداته"
+            @click="$emit('close')"
+          >
+            <ExternalLink class="w-3.5 h-3.5 text-primary-400" />
+            <span>السجل التدريبي الكامل</span>
+          </RouterLink>
+
+          <!-- ب. أزرار سياقية اختيارية حسب حالة الطلب -->
+          <!-- للمتقدمين تحت المراجعة: موافقة ورفض -->
+          <button
+            v-if="canApprove"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            @click="$emit('approve', application)"
+          >
+            <CheckCircle2 class="w-3.5 h-3.5" />
+            <span>الموافقة وتحديد المهلة</span>
+          </button>
+
+          <button
+            v-if="canReject"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            @click="$emit('reject', application)"
+          >
+            <XCircle class="w-3.5 h-3.5" />
+            <span>رفض الطلب</span>
+          </button>
+
+          <!-- لطلبات في انتظار الدفع: تمديد مهلة وإلغاء -->
+          <button
+            v-if="canReschedule"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            @click="$emit('reschedule', application)"
+          >
+            <CalendarClock class="w-3.5 h-3.5" />
+            <span>تحديد موعد جديد</span>
+          </button>
+
+          <button
+            v-if="canCancel"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            @click="$emit('cancel', application)"
+          >
+            <XCircle class="w-3.5 h-3.5" />
+            <span>إلغاء الطلب</span>
+          </button>
+
+          <!-- للطلبات المكتملة: عرض تفاصيل الطلب والسداد -->
+          <button
+            v-if="canSwitchToApplication"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            @click="$emit('switch-to-application', application)"
+          >
+            <FileText class="w-3.5 h-3.5" />
+            <span>تفاصيل القيد والسداد</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. نافذة تكبير المستندات المصورة المنبثقة فوق المودال (Lightbox) -->
+      <div
+        v-if="activePreviewUrl"
+        class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+        @click.self="activePreviewUrl = null"
+      >
+        <div class="relative max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-2xl border border-slate-700 animate-scale-in">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100">
+              {{ previewTitle }}
+            </h5>
+            <button
+              type="button"
+              class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer"
+              @click="activePreviewUrl = null"
+            >
+              <X class="w-4 h-4" />
+            </button>
+          </div>
+          <div class="p-3 flex items-center justify-center max-h-[70vh] overflow-hidden">
+            <img
+              :src="activePreviewUrl"
+              :alt="previewTitle"
+              class="max-w-full max-h-[65vh] object-contain rounded-xl"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import {
+  X,
+  ExternalLink,
+  BookOpen,
+  Building2,
+  UserCheck,
+  Clock,
+  IdCard,
+  FileText,
+  Eye,
+  CheckCircle2,
+  XCircle,
+  CalendarClock,
+} from 'lucide-vue-next';
+
+const route = useRoute();
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false,
+  },
+  application: {
+    type: Object,
+    default: null,
+  },
+  trainee: {
+    type: Object,
+    default: null,
+  },
+  log: {
+    type: Object,
+    default: null,
+  },
+  // صلاحيات إظهار أزرار الإجراءات السياقية
+  showApproveReject: {
+    type: Boolean,
+    default: false,
+  },
+  showRescheduleCancel: {
+    type: Boolean,
+    default: false,
+  },
+  showSwitchApplication: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+defineEmits([
+  'close',
+  'approve',
+  'reject',
+  'reschedule',
+  'cancel',
+  'switch-to-application',
+]);
+
+const activePreviewUrl = ref(null);
+const previewTitle = ref('');
+
+// استخلاص كائن المتدرب بشكل موحد سواء تم تمرير تطبيق أو سجل أو متدرب
+const trainee = computed(() => {
+  return props.trainee || props.application?.trainee || props.log?.trainee || null;
+});
+
+// استخلاص كائن الدورة
+const courseRound = computed(() => {
+  return props.application?.courseRound || props.log?.courseRound || null;
+});
+
+// الأحرف الأولى
+const initials = computed(() => {
+  if (!trainee.value?.fullName) return 'م';
+  const parts = trainee.value.fullName.trim().split(/\s+/);
+  if (parts.length >= 2) return parts[0][0] + ' ' + parts[1][0];
+  return trainee.value.fullName.slice(0, 2);
+});
+
+// شارة الفئة
+const categoryBadge = computed(() => {
+  const cat = trainee.value?.category;
+  const map = {
+    Civilian: { label: 'مدني', class: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200' },
+    MilitaryOfficer: { label: 'ضابط ق.م', class: 'bg-primary-50 text-primary-800 dark:bg-primary-950/70 dark:text-primary-300 border-primary-200' },
+    MilitaryFamily: { label: 'عائلات ضباط ق.م', class: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200' },
+    PoliceOfficerOrFamily: { label: 'شرطة / عائلاتهم', class: 'bg-blue-50 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border-blue-200' },
+  };
+  return map[cat] || { label: cat || 'مدني', class: 'bg-slate-100 text-slate-700 border-slate-200' };
+});
+
+// شارة الحالة للطلب إن وجدت
+const statusBadge = computed(() => {
+  const status = props.application?.status || props.log?.decision;
+  if (!status) return null;
+  const map = {
+    UnderReview: { label: 'تحت المراجعة', class: 'bg-amber-50 text-amber-700 border-amber-200' },
+    PendingPayment: { label: 'في انتظار الدفع', class: 'bg-blue-50 text-blue-700 border-blue-200' },
+    PaymentMissed: { label: 'فات موعد السداد', class: 'bg-rose-50 text-rose-700 border-rose-200' },
+    Enrolled: { label: 'مقيد بالدورة', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    Allowed: { label: 'دخول مصرح به', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    Denied: { label: 'دخول مرفوض', class: 'bg-rose-50 text-rose-700 border-rose-200' },
+  };
+  return map[status] || { label: status, class: 'bg-slate-100 text-slate-700 border-slate-200' };
+});
+
+// عمر المتدرب
+const age = computed(() => {
+  if (!trainee.value?.dateOfBirth) return '';
+  const birth = new Date(trainee.value.dateOfBirth);
+  const now = new Date();
+  let a = now.getFullYear() - birth.getFullYear();
+  const m = now.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) a--;
+  return `${a} سنة`;
+});
+
+// سريان البطاقة
+const isIdExpired = computed(() => {
+  if (!trainee.value?.nationalIdExpiryDate) return false;
+  return new Date(trainee.value.nationalIdExpiryDate) < new Date();
+});
+
+// مسار الرابط لسجل المتدرب مع باراميتر العودة للصفحة السابقة (?from=...)
+const profileUrl = computed(() => {
+  const id = trainee.value?.id || 1;
+  const from = encodeURIComponent(route.fullPath);
+  return `/trainee-profile/${id}?from=${from}`;
+});
+
+// أذونات ظهور الأزرار
+const canApprove = computed(() => {
+  return props.showApproveReject || props.application?.status === 'UnderReview';
+});
+
+const canReject = computed(() => {
+  return props.showApproveReject || props.application?.status === 'UnderReview';
+});
+
+const canReschedule = computed(() => {
+  return props.showRescheduleCancel || ['PendingPayment', 'PaymentMissed'].includes(props.application?.status);
+});
+
+const canCancel = computed(() => {
+  return props.showRescheduleCancel || ['PendingPayment', 'PaymentMissed'].includes(props.application?.status);
+});
+
+const canSwitchToApplication = computed(() => {
+  return props.showSwitchApplication || ['Enrolled', 'CourseEnded'].includes(props.application?.status);
+});
+
+// دوال التنسيق
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatCurrency(val) {
+  if (val === undefined || val === null) return '—';
+  return `${Number(val).toLocaleString('ar-EG')} ج.م`;
+}
+
+function getMaritalStatusLabel(status) {
+  const map = {
+    Single: 'أعزب / آنسة',
+    Married: 'متزوج',
+    Divorced: 'مطلق',
+    Widowed: 'أرمل',
+  };
+  return map[status] || status || '—';
+}
+</script>

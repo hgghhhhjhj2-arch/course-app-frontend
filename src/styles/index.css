@@ -22,6 +22,9 @@
 
   --color-accent-teal: #14b8c4;
 
+  /* ------------------- Extended Slate Tones ------------------- */
+  --color-slate-850: #172033;
+
   /* ------------------- Backgrounds & Surfaces (Light & Crisp) ------------------- */
   --color-background: #f8fafc;
   --color-surface: #ffffff;
@@ -117,4 +120,125 @@
   .dark ::-webkit-scrollbar-thumb:hover {
     background: #475569;
   }
+}
+
+/* ------------------- PrimeVue Select Theme Integration with Slate Palette ------------------- */
+.p-select {
+  border-radius: 0.75rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+  font-family: var(--font-sans) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.p-select:not(.p-disabled):hover {
+  border-color: #cbd5e1 !important;
+}
+
+.p-select:not(.p-disabled).p-focus {
+  border-color: #1d80aa !important;
+  box-shadow: 0 0 0 2px rgba(29, 128, 170, 0.2) !important;
+}
+
+.dark .p-select {
+  background-color: #1e293b !important; /* slate-800 */
+  border-color: #334155 !important;     /* slate-700 */
+  color: #f1f5f9 !important;            /* slate-100 */
+}
+
+.dark .p-select:not(.p-disabled):hover {
+  border-color: #475569 !important;     /* slate-600 */
+  background-color: #1e293b !important;
+}
+
+.dark .p-select:not(.p-disabled).p-focus {
+  border-color: #1d80aa !important;
+  box-shadow: 0 0 0 2px rgba(29, 128, 170, 0.25) !important;
+}
+
+.p-select .p-select-label {
+  font-size: 0.75rem !important; /* text-xs */
+  font-weight: 700 !important;
+  color: #1e293b !important;
+}
+
+.dark .p-select .p-select-label {
+  color: #f1f5f9 !important;
+}
+
+.p-select .p-select-label.p-placeholder {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+.dark .p-select .p-select-label.p-placeholder {
+  color: #94a3b8 !important;
+}
+
+.p-select .p-select-dropdown,
+.p-select .p-select-clear-icon {
+  color: #64748b !important;
+}
+
+.dark .p-select .p-select-dropdown,
+.dark .p-select .p-select-clear-icon {
+  color: #94a3b8 !important;
+}
+
+/* القائمة المنسدلة (Overlay Dropdown) */
+.p-select-overlay {
+  border-radius: 0.875rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.dark .p-select-overlay {
+  background-color: #0f172a !important; /* slate-900 */
+  border-color: #334155 !important;     /* slate-700 */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.p-select-list-container {
+  padding: 4px !important;
+}
+
+.p-select-option {
+  font-size: 0.75rem !important; /* text-xs */
+  font-weight: 600 !important;
+  border-radius: 0.5rem !important;
+  padding: 6px 10px !important;
+  margin: 2px 0 !important;
+  color: #334155 !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.dark .p-select-option {
+  color: #cbd5e1 !important;
+}
+
+.p-select-option:not(.p-select-option-selected):not(.p-disabled):hover,
+.p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.dark .p-select-option:not(.p-select-option-selected):not(.p-disabled):hover,
+.dark .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
+  background-color: #1e293b !important; /* slate-800 */
+  color: #ffffff !important;
+}
+
+.p-select-option.p-select-option-selected {
+  background-color: #eef6fb !important;
+  color: #0f5776 !important;
+  font-weight: 700 !important;
+}
+
+.dark .p-select-option.p-select-option-selected {
+  background-color: rgba(29, 128, 170, 0.3) !important;
+  color: #74bfda !important;
+  font-weight: 700 !important;
 }

@@ -5,37 +5,91 @@ export default [
     children: [
       {
         path: '',
-        redirect: '/affairs/applications',
+        redirect: '/affairs/dashboard',
+      },
+
+      // ----------------- 0. لوحة المعلومات -----------------
+      {
+        path: 'dashboard',
+        name: 'AffairsDashboard',
+        component: () => import('./components/AffairsDashboard/AffairsDashboardView.vue'),
+        meta: { title: 'لوحة المعلومات' },
+      },
+
+      // ----------------- 1. سكشن الطلبات -----------------
+      {
+        path: 'applications/applicants',
+        name: 'ApplicantApplications',
+        component: () => import('./components/ApplicantApplications/ApplicantApplicationsView.vue'),
+        meta: { title: 'طلبات المتقدمين' },
       },
       {
+        path: 'applications/pending-payment',
+        name: 'PendingPaymentApplications',
+        component: () => import('./components/PendingPaymentApplications/PendingPaymentApplicationsView.vue'),
+        meta: { title: 'طلبات في انتظار دفع الرسوم' },
+      },
+      {
+        path: 'applications/completed',
+        name: 'CompletedApplications',
+        component: () => import('./components/CompletedApplications/CompletedApplicationsView.vue'),
+        meta: { title: 'طلبات مكتملة' },
+      },
+      {
+        path: 'gate-attendance/today',
+        name: 'TodayGateAttendance',
+        component: () => import('./components/TodayGateAttendance/TodayGateAttendanceView.vue'),
+        meta: { title: 'حضور البوابة اليوم' },
+      },
+
+      // ----------------- 2. سكشن الدورات -----------------
+      {
+        path: 'courses/all',
+        name: 'AllCourses',
+        component: () => import('./components/AllCourses/AllCoursesView.vue'),
+        meta: { title: 'كل الدورات' },
+      },
+      {
+        path: 'courses/active',
+        name: 'ActiveCourses',
+        component: () => import('./components/ActiveCourses/ActiveCoursesView.vue'),
+        meta: { title: 'الدورات المنعقدة حالياً' },
+      },
+      {
+        path: 'courses/archived',
+        name: 'ArchivedCourses',
+        component: () => import('./components/ArchivedCourses/ArchivedCoursesView.vue'),
+        meta: { title: 'الدورات المنعقدة سابقاً' },
+      },
+
+      // ----------------- 3. سكشن المحاضرون -----------------
+      {
+        path: 'instructors/all',
+        name: 'AllInstructors',
+        component: () => import('./components/AllInstructors/AllInstructorsView.vue'),
+        meta: { title: 'جميع المحاضرون' },
+      },
+
+      // روابط للتوافق مع الروابط السابقة
+      {
         path: 'applications',
-        name: 'AffairsApplications',
-        component: () => import('./views/AffairsApplicationsView.vue'),
-        meta: { title: 'إدارة الطلبات والسداد' },
+        redirect: '/affairs/applications/applicants',
       },
       {
         path: 'courses',
-        name: 'AffairsCourses',
-        component: () => import('./views/AffairsCoursesView.vue'),
-        meta: { title: 'الدورات ودفعات الانعقاد' },
+        redirect: '/affairs/courses/all',
       },
       {
         path: 'instructors',
-        name: 'AffairsInstructors',
-        component: () => import('./views/AffairsInstructorsView.vue'),
-        meta: { title: 'إدارة المحاضرين' },
+        redirect: '/affairs/instructors/all',
       },
       {
         path: 'attendance',
-        name: 'AffairsAttendance',
-        component: () => import('./views/AffairsAttendanceView.vue'),
-        meta: { title: 'سجل الحضور والغياب' },
+        redirect: '/affairs/gate-attendance/today',
       },
       {
         path: 'gate-logs',
-        name: 'AffairsGateLogs',
-        component: () => import('./views/AffairsGateLogsView.vue'),
-        meta: { title: 'سجل البوابة والتدقيق' },
+        redirect: '/affairs/gate-attendance/today',
       },
     ],
   },

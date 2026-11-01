@@ -119,17 +119,17 @@
               :to="item.path"
               :title="isCollapsed ? item.label : ''"
               :class="[
-                'flex items-center transition-all duration-200 cursor-pointer group select-none relative',
+                'flex items-center transition-colors duration-150 cursor-pointer group select-none relative outline-none focus:outline-none focus:ring-0 focus-visible:outline-none border',
                 isCollapsed
                   ? 'w-11 h-11 rounded-full mx-auto justify-center'
                   : 'w-full h-11 px-2 rounded-2xl gap-2.5',
                 isActive(item.path)
                   ? isCollapsed
-                    ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
-                    : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+                    ? 'bg-primary-50 text-primary-800 border-primary-300 dark:bg-slate-800 dark:border-primary-500/60 dark:text-white shadow-sm font-bold'
+                    : 'bg-primary-50 text-primary-800 border-primary-200 dark:bg-slate-800 dark:border-primary-500/50 dark:text-white shadow-2xs font-bold'
                   : isCollapsed
-                    ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'border-transparent bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
               ]"
               @click="$emit('close')"
             >
@@ -177,17 +177,17 @@
           to="/affairs/attendance"
           :title="isCollapsed ? 'مركز الإشعارات' : ''"
           :class="[
-            'flex items-center transition-all duration-200 cursor-pointer relative group select-none',
+            'flex items-center transition-colors duration-150 cursor-pointer relative group select-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none border',
             isCollapsed
               ? 'w-11 h-11 rounded-full mx-auto justify-center'
               : 'w-full h-10 px-2 rounded-2xl gap-2.5',
             isActive('/affairs/attendance')
               ? isCollapsed
-                ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
-                : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+                ? 'bg-primary-50 text-primary-800 border-primary-300 dark:bg-slate-800 dark:border-primary-500/60 dark:text-white shadow-sm font-bold'
+                : 'bg-primary-50 text-primary-800 border-primary-200 dark:bg-slate-800 dark:border-primary-500/50 dark:text-white shadow-2xs font-bold'
               : isCollapsed
-                ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                ? 'border-transparent bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
           ]"
           @click="$emit('close')"
         >
@@ -230,17 +230,17 @@
           to="/profile"
           :title="isCollapsed ? 'الإعدادات والملف الشخصي' : ''"
           :class="[
-            'flex items-center transition-all duration-200 cursor-pointer group select-none',
+            'flex items-center transition-colors duration-150 cursor-pointer group select-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none border',
             isCollapsed
               ? 'w-11 h-11 rounded-full mx-auto justify-center'
               : 'w-full h-10 px-2 rounded-2xl gap-2.5',
             isActive('/profile')
               ? isCollapsed
-                ? 'bg-primary-50 text-primary-800 border border-primary-300 ring-2 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/60 dark:ring-2 dark:ring-primary-500/30 dark:text-white shadow-sm font-bold'
-                : 'bg-primary-50 text-primary-800 border border-primary-200 ring-1 ring-primary-500/20 dark:bg-slate-800 dark:border-primary-500/50 dark:ring-1 dark:ring-primary-500/30 dark:text-white shadow-2xs font-bold'
+                ? 'bg-primary-50 text-primary-800 border-primary-300 dark:bg-slate-800 dark:border-primary-500/60 dark:text-white shadow-sm font-bold'
+                : 'bg-primary-50 text-primary-800 border-primary-200 dark:bg-slate-800 dark:border-primary-500/50 dark:text-white shadow-2xs font-bold'
               : isCollapsed
-                ? 'bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                ? 'border-transparent bg-slate-100/70 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
           ]"
           @click="$emit('close')"
         >
@@ -277,23 +277,26 @@
 import { computed } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import {
-  LayoutDashboard,
-  FileText,
-  BookOpen,
-  Users,
-  QrCode,
-  ShieldCheck,
-  Building2,
-  CalendarCheck,
-  Award,
   Settings,
   Bell,
   ChevronRight,
   ChevronLeft,
   X,
+  LayoutDashboard,
+  FileText,
+  Users,
+  QrCode,
+  ShieldCheck,
 } from 'lucide-vue-next';
 import { useAuthStore } from '@/components/Auth/stores/authStore';
 import { ROLES, ROLE_LABELS } from '@/shared/constants/roles';
+
+// استيراد إعدادات السايدبار المقسمة لكل كمبوننت / دومين
+import { affairsNav } from '@/components/Affairs/helpers/sidebarNav';
+import { adminNav } from '@/components/Admin/helpers/sidebarNav';
+import { dashboardNav } from '@/components/Dashboard/helpers/sidebarNav';
+import { securityNav } from '@/components/Security/helpers/sidebarNav';
+import { traineeNav } from '@/components/Trainee/helpers/sidebarNav';
 
 defineProps({
   isOpen: {
@@ -326,88 +329,49 @@ const userInitials = computed(() => {
 
 function isActive(path) {
   if (path === '/') return route.path === '/';
-  return route.path.startsWith(path);
+  return route.path === path;
 }
 
 const navGroups = computed(() => {
   const role = authStore.user?.role;
-  const groups = [];
 
-  // Commander (القائد)
-  if (role === ROLES.COMMANDER) {
-    groups.push({
-      title: 'لوحة القيادة والمؤشرات',
-      items: [
-        { label: 'المؤشرات العامة', path: '/dashboard', icon: LayoutDashboard },
-        { label: 'مخطط القاعات التفاعلي', path: '/dashboard/halls-map', icon: Building2 },
-        { label: 'التوزيع الجغرافي للمتدربين', path: '/dashboard/geography', icon: Users },
-      ],
-    });
+  // شؤون الدارسين
+  if (role === ROLES.AFFAIRS) {
+    return affairsNav;
   }
 
-  // Affairs (شؤون الدارسين)
-  if (role === ROLES.AFFAIRS) {
-    groups.push({
-      title: 'شؤون الدارسين والدورات',
-      items: [
-        { label: 'طلبات الالتحاق والسداد', path: '/affairs/applications', icon: FileText },
-        { label: 'كتالوج الدورات والدفعات', path: '/affairs/courses', icon: BookOpen },
-        { label: 'هيئة التدريس والمحاضرون', path: '/affairs/instructors', icon: Users },
-        { label: 'سجلات الحضور والغياب', path: '/affairs/attendance', icon: CalendarCheck },
-        { label: 'سجل حركات البوابة', path: '/affairs/gate-logs', icon: ShieldCheck },
-      ],
-    });
+  // Commander (القائد / لوحة التحكم)
+  if (role === ROLES.COMMANDER) {
+    return dashboardNav;
   }
 
   // Trainee (المتدرب)
   if (role === ROLES.TRAINEE) {
-    groups.push({
-      title: 'بوابة خدمات المتدرب',
-      items: [
-        { label: 'طلباتي وتصاريح الدخول (QR)', path: '/trainee/applications', icon: QrCode },
-        { label: 'كتالوج الدورات المتاحة', path: '/trainee/courses', icon: BookOpen },
-        { label: 'شهاداتي المعتمدة', path: '/trainee/certificates', icon: Award },
-      ],
-    });
+    return traineeNav;
   }
 
   // Security (الأمن)
   if (role === ROLES.SECURITY) {
-    groups.push({
-      title: 'إدارة البوابة والأمن',
-      items: [
-        { label: 'مسح تصريح الدخول (QR)', path: '/security/gate-scan', icon: QrCode },
-        { label: 'سجل حركات الدخول والخروج', path: '/security/gate-logs', icon: ShieldCheck },
-      ],
-    });
+    return securityNav;
   }
 
   // Admin (مسؤول النظام)
   if (role === ROLES.ADMIN) {
-    groups.push({
-      title: 'لوحة تحكم مسؤول النظام',
-      items: [
-        { label: 'إدارة حسابات المستخدمين', path: '/admin/users', icon: Users },
-        { label: 'القاعات والمعامل التدريبية', path: '/admin/halls', icon: Building2 },
-        { label: 'سجل تدقيق العمليات (Audit Logs)', path: '/admin/audit-logs', icon: ShieldCheck },
-      ],
-    });
+    return adminNav;
   }
 
   // معاينة عامة في حال عدم تحديد الدور
-  if (!role) {
-    groups.push({
+  return [
+    {
       title: 'روابط النظام العامة',
       items: [
         { label: 'لوحة التحكم', path: '/dashboard', icon: LayoutDashboard },
-        { label: 'شؤون الدارسين', path: '/affairs/applications', icon: FileText },
+        { label: 'شؤون الدارسين', path: '/affairs/dashboard', icon: FileText },
         { label: 'المتدرب', path: '/trainee/applications', icon: QrCode },
         { label: 'البوابة', path: '/security/gate-scan', icon: ShieldCheck },
         { label: 'مسؤول النظام', path: '/admin/users', icon: Users },
       ],
-    });
-  }
-
-  return groups;
+    },
+  ];
 });
 </script>
