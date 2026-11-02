@@ -1,9 +1,9 @@
 <!--
   Component: AdminUsersView.vue
-  Description: User & Staff Management strictly matching the Audit & Gate Logs page pattern.
-  Staff-only management (no trainee account creation).
-  Clean KPI cards layout (Total users, active staff, disabled accounts).
-  Includes secure Change Password modal with confirmation and strength checks.
+  Description: User & Staff Management with Full Admin Control:
+  - Full management of ALL user accounts in the table (Staff, Admins, and Trainees).
+  - Admin can: Edit details, Change/Reset Password, Deactivate/Activate account, and Delete account permanently (with modal confirmation).
+  - Prominent KPI card for "Total Registered Trainees" (إجمالي المتدربين) alongside System Users and Active Staff.
 -->
 <template>
   <div class="space-y-4 select-none pb-8" dir="rtl">
@@ -23,7 +23,7 @@
             </span>
           </div>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            إدارة صلاحيات طاقم العمل، حسابات شؤون الدارسين، أمن البوابات، وتعديل كلمات المرور
+            صلاحيات التحكم الكاملة في حسابات المنظومة: طاقم العمل، شؤون الدارسين، الأمن، والمتدربين
           </p>
         </div>
       </div>
@@ -44,17 +44,18 @@
           @click="openUserModal()"
         >
           <Plus class="w-3.5 h-3.5" />
-          <span>إضافة موظف / مسؤول جديد</span>
+          <span>إضافة مستخدم جديد</span>
         </button>
       </div>
     </div>
 
-    <!-- 2. كروت المؤشرات السريعة (AppKpiCard) - تم حصرها بحسابات طاقم العمل -->
+    <!-- 2. كروت المؤشرات السريعة (AppKpiCard) - مع إبراز كارت المتدربين ككارت رئيسي -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- 1. إجمالي حسابات المنظومة -->
       <AppKpiCard
-        title="إجمالي حسابات النظام"
+        title="إجمالي حسابات المنظومة"
         :value="users.length"
-        badge="حساب مسجل"
+        badge="طاقم ومتدربين"
         badge-class="text-slate-500 dark:text-slate-400 font-bold"
         icon-bg="bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400"
       >
@@ -63,6 +64,20 @@
         </template>
       </AppKpiCard>
 
+      <!-- 2. كارت رئيسي بارز: إجمالي المتدربين المسجلين -->
+      <AppKpiCard
+        title="إجمالي المتدربين المسجلين"
+        :value="traineesCount"
+        badge="حسابات دارسين"
+        badge-class="text-blue-600 dark:text-blue-400 font-bold"
+        icon-bg="bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400"
+      >
+        <template #icon>
+          <GraduationCap class="w-5 h-5" />
+        </template>
+      </AppKpiCard>
+
+      <!-- 3. طاقم العمل والمسؤولين النشطين -->
       <AppKpiCard
         title="طاقم العمل والمسؤولين"
         :value="activeStaffCount"
@@ -74,24 +89,12 @@
           <ShieldCheck class="w-5 h-5" />
         </template>
       </AppKpiCard>
-
-      <AppKpiCard
-        title="الحسابات المعطلة"
-        :value="disabledCount"
-        badge="معلق وموقوف"
-        badge-class="text-rose-500 font-bold"
-        icon-bg="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400"
-      >
-        <template #icon>
-          <UserX class="w-5 h-5" />
-        </template>
-      </AppKpiCard>
     </div>
 
     <!-- 3. شريط تبويبات الحالة السريعة -->
     <div class="p-1.5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 shadow-2xs flex flex-wrap items-center justify-between gap-2 transition-colors">
       <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900/60 rounded-xl w-full sm:w-auto">
-        <!-- تبويب الكل -->
+        <!-- كافة الحسابات -->
         <button
           type="button"
           class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -111,28 +114,49 @@
           </span>
         </button>
 
-        <!-- تبويب النشطة -->
+        <!-- المتدربين -->
         <button
           type="button"
           class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
           :class="
-            statusTab === 'active'
-              ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 shadow-2xs font-black'
-              : 'text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+            statusTab === 'trainees'
+              ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 shadow-2xs font-black'
+              : 'text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
           "
-          @click="statusTab = 'active'"
+          @click="statusTab = 'trainees'"
         >
-          <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-          <span>الحسابات المفعلة</span>
+          <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+          <span>المتدربين (Trainees)</span>
           <span
             class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-            :class="statusTab === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60' : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500'"
+            :class="statusTab === 'trainees' ? 'bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60' : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500'"
           >
-            {{ users.filter(u => u.isActive).length }}
+            {{ traineesCount }}
           </span>
         </button>
 
-        <!-- تبويب المعطلة -->
+        <!-- طاقم العمل فقط -->
+        <button
+          type="button"
+          class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+          :class="
+            statusTab === 'staff'
+              ? 'bg-white dark:bg-slate-800 text-[#3B5431] dark:text-emerald-400 shadow-2xs font-black'
+              : 'text-slate-500 dark:text-slate-400 hover:text-[#3B5431] dark:hover:text-emerald-300'
+          "
+          @click="statusTab = 'staff'"
+        >
+          <span class="w-2 h-2 rounded-full bg-[#3B5431] shrink-0"></span>
+          <span>طاقم العمل والمسؤولين</span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+            :class="statusTab === 'staff' ? 'bg-[#DCE4D3] text-[#3B5431] border border-[#CBD8C0]' : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500'"
+          >
+            {{ staffOnlyCount }}
+          </span>
+        </button>
+
+        <!-- الحسابات المعطلة -->
         <button
           type="button"
           class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -144,7 +168,7 @@
           @click="statusTab = 'inactive'"
         >
           <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-          <span>الحسابات المعطلة</span>
+          <span>حسابات معطلة</span>
           <span
             class="px-2 py-0.5 rounded-full text-[10px] font-bold"
             :class="statusTab === 'inactive' ? 'bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60' : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500'"
@@ -179,7 +203,7 @@
         </button>
       </div>
 
-      <!-- فلتر الصلاحيات (طاقم العمل فقط) -->
+      <!-- فلتر الصلاحيات والأدوار (الجميع متاح للفلترة) -->
       <div class="w-full sm:w-64">
         <Select
           v-model="selectedRole"
@@ -205,7 +229,7 @@
       </button>
     </div>
 
-    <!-- 5. جدول الحسابات الرئيسي باستخدام AppTable و AppPagination -->
+    <!-- 5. جدول الحسابات الرئيسي باستخدام AppTable و AppPagination مع إتاحة التحكم الكامل للأدمن -->
     <div class="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xs overflow-hidden transition-colors">
       <AppTable
         :columns="columns"
@@ -267,30 +291,32 @@
           </span>
         </template>
 
-        <!-- الإجراءات -->
+        <!-- الإجراءات والتحكم الكامل لجميع الحسابات (طاقم العمل والمتدربين) -->
         <template #actions="{ row }">
           <div class="flex items-center justify-center gap-1.5">
+            <!-- 1. تعديل بيانات الحساب -->
             <button
               type="button"
-              class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
-              title="تعديل بيانات الحساب"
+              class="h-8 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+              :title="`تعديل بيانات ${row.fullName}`"
               @click="openUserModal(row)"
             >
               <Edit class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
               <span>تعديل</span>
             </button>
 
-            <!-- زر تغيير كلمة المرور بالنافذة الآمنة -->
+            <!-- 2. تغيير كلمة المرور للحساب -->
             <button
               type="button"
-              class="h-8 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
-              title="تغيير كلمة المرور يدوياً وتأكيدها"
+              class="h-8 px-2 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+              :title="`تغيير كلمة المرور لـ ${row.fullName}`"
               @click="openChangePasswordModal(row)"
             >
               <KeyRound class="w-3.5 h-3.5" />
-              <span>تغيير كلمة المرور</span>
+              <span>كلمة المرور</span>
             </button>
 
+            <!-- 3. تفعيل / تعطيل الحساب -->
             <button
               type="button"
               class="h-8 px-2 rounded-lg border text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
@@ -299,9 +325,21 @@
                   ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/80'
                   : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/80'
               "
+              :title="row.isActive ? 'تعطيل الحساب' : 'تفعيل الحساب'"
               @click="toggleUserStatus(row)"
             >
               <span>{{ row.isActive ? 'تعطيل' : 'تفعيل' }}</span>
+            </button>
+
+            <!-- 4. حذف الحساب نهائياً مع تأكيد بمودال -->
+            <button
+              type="button"
+              class="h-8 px-2 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-950/50 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/80 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+              :title="`حذف حساب ${row.fullName} نهائياً`"
+              @click="openDeleteConfirmation(row)"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+              <span>حذف</span>
             </button>
           </div>
         </template>
@@ -314,14 +352,14 @@
         v-model:items-per-page="itemsPerPage"
         :total-items="filteredUsers.length"
         :per-page-options="perPageOptions"
-        item-label="موظف / مسؤول"
+        item-label="حساب مسجل"
       />
     </div>
 
-    <!-- 6. نافذة إضافة وتعديل حساب الموظف (طاقم العمل فقط دون المتدربين) -->
+    <!-- 6. نافذة إضافة وتعديل الحساب (تشمل كافة الأدوار للمسؤول) -->
     <BaseModal
       v-model="isUserModalOpen"
-      :title="isEditing ? 'تعديل بيانات الحساب والصلاحية' : 'إضافة موظف / مسؤول جديد'"
+      :title="isEditing ? 'تعديل بيانات الحساب والصلاحية' : 'إضافة حساب جديد بالمنظومة'"
       max-width="md"
     >
       <form id="userForm" class="space-y-4" @submit.prevent="saveUser">
@@ -336,8 +374,8 @@
           <BaseInput
             v-model="formData.email"
             type="email"
-            label="البريد الإلكتروني الرسمي"
-            placeholder="name@m3hd.edu.eg"
+            label="البريد الإلكتروني"
+            placeholder="name@m3hd.edu.eg أو بريد شخصي"
             required
           />
 
@@ -352,19 +390,16 @@
 
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">
-            الدور الوظيفي ومستوى الصلاحية الإدارية <span class="text-rose-500">*</span>
+            الدور الوظيفي والصلاحية <span class="text-rose-500">*</span>
           </label>
           <Select
             v-model="formData.role"
-            :options="staffRoleSelectOptions"
+            :options="allRolesSelectOptions"
             optionLabel="label"
             optionValue="value"
             placeholder="اختر الصلاحية"
             class="w-full text-xs font-bold rounded-xl h-10 flex items-center"
           />
-          <p class="text-[11px] text-slate-400 dark:text-slate-500">
-            * تنبيه: هذه الصفحة مخصصة فقط لإنشاء وإدارة حسابات طاقم العمل والمسؤولين. حسابات المتدربين تنشأ آلياً من بوابة التسجيل.
-          </p>
         </div>
 
         <div class="flex items-center gap-2.5 pt-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -396,10 +431,10 @@
       </template>
     </BaseModal>
 
-    <!-- 7. نافذة تغيير كلمة المرور الآمنة مع التحقق والتأكيد -->
+    <!-- 7. نافذة تغيير كلمة المرور الآمنة مع التحقق والتأكيد (متاحة لجميع الحسابات) -->
     <BaseModal
       v-model="isChangePasswordModalOpen"
-      title="تعديل وتعيين كلمة المرور للمستخدم"
+      title="تعديل وتعيين كلمة المرور للحساب"
       max-width="md"
     >
       <form id="changePasswordForm" class="space-y-4" @submit.prevent="saveNewPassword">
@@ -412,9 +447,14 @@
             <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100">
               {{ targetUserForPassword?.fullName }}
             </h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              {{ targetUserForPassword?.email }}
-            </p>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                {{ targetUserForPassword?.email }}
+              </span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-bold border" :class="getRoleBadgeStyle(targetUserForPassword?.role)">
+                {{ getRoleArabicLabel(targetUserForPassword?.role) }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -485,7 +525,7 @@
           </p>
         </div>
 
-        <!-- رسالة نجاح الحفظ إن وجدت -->
+        <!-- رسالة نجاح الحفظ -->
         <div v-if="passwordSuccessMessage" class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold text-center">
           {{ passwordSuccessMessage }}
         </div>
@@ -507,6 +547,42 @@
         </BaseButton>
       </template>
     </BaseModal>
+
+    <!-- 8. نافذة تأكيد حذف الحساب نهائياً (متاحة لكافة الحسابات) -->
+    <BaseModal
+      v-model="isDeleteModalOpen"
+      title="تأكيد حذف الحساب نهائياً"
+      max-width="sm"
+    >
+      <div class="space-y-3">
+        <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-200 dark:border-rose-800">
+          <AlertTriangle class="w-6 h-6" />
+        </div>
+        <div class="text-center">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">
+            هل أنت متأكد من رغبتك في حذف هذا الحساب؟
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            سيتم إزالة حساب 
+            <strong class="text-slate-800 dark:text-slate-200 block mt-1 font-bold">{{ userToDelete?.fullName }}</strong>
+            ({{ userToDelete?.email }}) [{{ getRoleArabicLabel(userToDelete?.role) }}] نهائياً من المنظومة ولا يمكن التراجع عن هذه العملية.
+          </p>
+        </div>
+      </div>
+
+      <template #footer>
+        <BaseButton variant="secondary" size="sm" @click="isDeleteModalOpen = false">
+          إلغاء التراجع
+        </BaseButton>
+        <BaseButton
+          variant="danger"
+          size="sm"
+          @click="confirmDeleteUser"
+        >
+          تأكيد الحذف النهائي
+        </BaseButton>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -514,8 +590,8 @@
 import { ref, computed } from 'vue';
 import {
   Users,
-  UserX,
   ShieldCheck,
+  GraduationCap,
   Plus,
   Search,
   RotateCcw,
@@ -524,6 +600,8 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-vue-next';
 
 import AppKpiCard from '@/shared/ui/Cards/AppKpiCard.vue';
@@ -536,7 +614,7 @@ import Select from 'primevue/select';
 
 import { ROLES, ROLE_LABELS } from '@/shared/constants/roles';
 
-// حسابات طاقم العمل والمسؤولين (مستثنى منها Trainee بالكامل)
+// حسابات المنظومة (طاقم العمل والمسؤولين والمتدربين)
 const users = ref([
   {
     id: 1,
@@ -586,15 +664,48 @@ const users = ref([
     role: ROLES.SECURITY,
     isActive: false,
   },
+  // حسابات المتدربين المسجلين
+  {
+    id: 7,
+    fullName: 'محمد إبراهيم حسن',
+    email: 'mohamed.ibrahim@gmail.com',
+    phone: '01011223344',
+    role: ROLES.TRAINEE,
+    isActive: true,
+  },
+  {
+    id: 8,
+    fullName: 'كريم وائل المنشاوي',
+    email: 'karim.wael@yahoo.com',
+    phone: '01144556677',
+    role: ROLES.TRAINEE,
+    isActive: true,
+  },
+  {
+    id: 9,
+    fullName: 'سارة عبد الله الشافعي',
+    email: 'sara.abdallah@outlook.com',
+    phone: '01288990011',
+    role: ROLES.TRAINEE,
+    isActive: true,
+  },
+  {
+    id: 10,
+    fullName: 'أحمد محمود القاضي',
+    email: 'ahmed.kadi@gmail.com',
+    phone: '01556677889',
+    role: ROLES.TRAINEE,
+    isActive: false,
+  },
 ]);
 
 // أعمدة الجدول
 const columns = [
-  { key: 'fullName', label: 'اسم الموظف والبريد الإلكتروني' },
+  { key: 'fullName', label: 'اسم المستخدم والبريد الإلكتروني' },
   { key: 'phone', label: 'رقم الهاتف', cellClass: 'whitespace-nowrap' },
   { key: 'role', label: 'الدور والصلاحية', cellClass: 'whitespace-nowrap' },
   { key: 'status', label: 'حالة الحساب', cellClass: 'whitespace-nowrap' },
-  { key: 'actions', label: 'الإجراءات', align: 'center', cellClass: 'whitespace-nowrap' },
+  { key: 'actions', label: 'الإجراءات والتحكم', align: 'center', cellClass: 'whitespace-nowrap' },
 ];
 
 const searchQuery = ref('');
@@ -606,9 +717,9 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
 const perPageOptions = [
-  { label: '5 موظفين', value: 5 },
-  { label: '10 موظفين', value: 10 },
-  { label: '20 موظف', value: 20 },
+  { label: '5 حسابات', value: 5 },
+  { label: '10 حسابات', value: 10 },
+  { label: '20 حساب', value: 20 },
 ];
 
 const isUserModalOpen = ref(false);
@@ -618,11 +729,11 @@ const formData = ref({
   fullName: '',
   email: '',
   phone: '',
-  role: ROLES.AFFAIRS,
+  role: ROLES.TRAINEE,
   isActive: true,
 });
 
-// نافذة تعديل كلمة المرور الجديدة
+// نافذة تعديل كلمة المرور
 const isChangePasswordModalOpen = ref(false);
 const targetUserForPassword = ref(null);
 const newPassword = ref('');
@@ -631,15 +742,20 @@ const showNewPassword = ref(false);
 const showConfirmPassword = ref(false);
 const passwordSuccessMessage = ref('');
 
-// خيارات الصلاحيات المتاحة لطاقم العمل فقط (تم استبعاد Trainee)
-const staffRoleSelectOptions = [
+// نافذة تأكيد الحذف
+const isDeleteModalOpen = ref(false);
+const userToDelete = ref(null);
+
+// خيارات الأدوار الكاملة (تشمل المتدربين وطاقم العمل)
+const allRolesSelectOptions = [
   { value: ROLES.ADMIN, label: 'مسؤول النظام (Admin)' },
   { value: ROLES.AFFAIRS, label: 'شؤون الدارسين (Affairs)' },
   { value: ROLES.SECURITY, label: 'الأمن والحراسة (Security)' },
   { value: ROLES.COMMANDER, label: 'القيادة العليا (Commander)' },
+  { value: ROLES.TRAINEE, label: 'متدرب / دارس (Trainee)' },
 ];
 
-const roleFilterOptions = [...staffRoleSelectOptions];
+const roleFilterOptions = [...allRolesSelectOptions];
 
 const hasActiveFilters = computed(() => {
   return Boolean(searchQuery.value.trim()) || statusTab.value !== 'all' || selectedRole.value !== null;
@@ -664,10 +780,14 @@ const filteredUsers = computed(() => {
       user.email.toLowerCase().includes(q) ||
       user.phone.includes(q);
 
-    const matchTab =
-      tab === 'all' ||
-      (tab === 'active' && user.isActive) ||
-      (tab === 'inactive' && !user.isActive);
+    let matchTab = true;
+    if (tab === 'staff') {
+      matchTab = user.role !== ROLES.TRAINEE;
+    } else if (tab === 'trainees') {
+      matchTab = user.role === ROLES.TRAINEE;
+    } else if (tab === 'inactive') {
+      matchTab = !user.isActive;
+    }
 
     const matchRole = !role || user.role === role;
 
@@ -680,7 +800,16 @@ const paginatedUsers = computed(() => {
   return filteredUsers.value.slice(start, start + itemsPerPage.value);
 });
 
-const activeStaffCount = computed(() => users.value.filter((u) => u.isActive).length);
+// إحصائيات الكروت
+const traineesCount = computed(
+  () => users.value.filter((u) => u.role === ROLES.TRAINEE).length
+);
+const activeStaffCount = computed(
+  () => users.value.filter((u) => u.isActive && u.role !== ROLES.TRAINEE).length
+);
+const staffOnlyCount = computed(
+  () => users.value.filter((u) => u.role !== ROLES.TRAINEE).length
+);
 const disabledCount = computed(() => users.value.filter((u) => !u.isActive).length);
 
 // حساب قوة كلمة المرور والتحقق
@@ -746,6 +875,8 @@ function getRoleBadgeStyle(role) {
       return 'bg-[#DCE4D3] text-[#3B5431] border-[#CBD8C0]';
     case ROLES.SECURITY:
       return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300';
+    case ROLES.TRAINEE:
+      return 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300';
     default:
       return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300';
   }
@@ -761,6 +892,8 @@ function getRoleAvatarStyle(role) {
       return 'bg-[#DCE4D3] text-[#3B5431] border-[#CBD8C0] dark:bg-emerald-950/60 dark:text-emerald-300';
     case ROLES.SECURITY:
       return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/60 dark:text-blue-200';
+    case ROLES.TRAINEE:
+      return 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-900/60 dark:text-sky-200';
     default:
       return 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-300';
   }
@@ -777,7 +910,7 @@ function openUserModal(user = null) {
       fullName: '',
       email: '',
       phone: '',
-      role: ROLES.AFFAIRS,
+      role: ROLES.TRAINEE,
       isActive: true,
     };
   }
@@ -822,5 +955,18 @@ function saveNewPassword() {
     isChangePasswordModalOpen.value = false;
     passwordSuccessMessage.value = '';
   }, 1200);
+}
+
+// إجراء حذف الحساب
+function openDeleteConfirmation(user) {
+  userToDelete.value = user;
+  isDeleteModalOpen.value = true;
+}
+
+function confirmDeleteUser() {
+  if (!userToDelete.value) return;
+  users.value = users.value.filter((u) => u.id !== userToDelete.value.id);
+  isDeleteModalOpen.value = false;
+  userToDelete.value = null;
 }
 </script>
