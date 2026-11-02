@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-1.5 w-full">
-    <label v-if="label" :for="id" class="text-xs font-semibold text-slate-600">
+    <label v-if="label" :for="id" class="text-xs font-semibold text-slate-700 dark:text-slate-300">
       {{ label }}
       <span v-if="required" class="text-rose-500">*</span>
     </label>
@@ -11,11 +11,11 @@
         :disabled="disabled"
         :required="required"
         :class="[
-          'w-full appearance-none rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-800 transition-all outline-none',
+          'w-full appearance-none rounded-xl border bg-white dark:bg-slate-900/60 px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 transition-all outline-none',
           error
-            ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-100'
-            : 'border-slate-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-100',
-          disabled && 'bg-slate-50 cursor-not-allowed opacity-75',
+            ? 'border-rose-400 dark:border-rose-500 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 dark:focus:ring-rose-950/40'
+            : 'border-slate-300 dark:border-slate-700 focus:border-[#3B5431] dark:focus:border-emerald-500 focus:ring-2 focus:ring-[#3B5431]/20',
+          disabled && 'bg-slate-50 dark:bg-slate-800 cursor-not-allowed opacity-75',
         ]"
         @change="$emit('update:modelValue', $event.target.value)"
       >
@@ -24,6 +24,7 @@
           v-for="opt in options"
           :key="opt.value"
           :value="opt.value"
+          class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
         >
           {{ opt.label }}
         </option>
@@ -34,7 +35,7 @@
         </svg>
       </div>
     </div>
-    <span v-if="error" class="text-xs font-medium text-rose-500">{{ error }}</span>
+    <span v-if="error" class="text-xs font-medium text-rose-500 dark:text-rose-400">{{ error }}</span>
   </div>
 </template>
 

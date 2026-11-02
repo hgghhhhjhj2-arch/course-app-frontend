@@ -63,10 +63,10 @@ const sizeClasses = {
 };
 
 const variantClasses = {
-  primary: 'bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow active:scale-[0.99]',
-  secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-[0.99]',
-  outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 active:scale-[0.99]',
+  primary: 'bg-[#3B5431] hover:brightness-110 text-white shadow-sm hover:shadow active:scale-[0.99]',
+  secondary: 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 active:scale-[0.99]',
+  outline: 'border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-[0.99]',
   danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm active:scale-[0.99]',
-  ghost: 'hover:bg-slate-100 text-slate-600 active:scale-[0.99]',
+  ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 active:scale-[0.99]',
 };
 </script>

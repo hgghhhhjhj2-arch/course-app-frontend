@@ -14,11 +14,11 @@ export const adminNav = [
         path: '/admin/halls',
         icon: Building2,
       },
-      {
-        label: 'سجل تدقيق العمليات (Audit Logs)',
-        path: '/admin/audit-logs',
-        icon: ShieldCheck,
-      },
+      // {
+      //   label: 'سجل تدقيق العمليات',
+      //   path: '/admin/audit-logs',
+      //   icon: ShieldCheck,
+      // },
     ],
   },
 ];

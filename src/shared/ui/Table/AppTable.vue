@@ -2,13 +2,13 @@
   <div class="w-full overflow-hidden">
     <div class="overflow-x-auto custom-scrollbar">
       <table class="w-full text-right text-xs">
-        <!-- ترويسة الجدول -->
+        <!-- ترويسة الجدول: تباين واضح ولون خلفية ونص مميز بالرمادي الفاتح في الدارك موود -->
         <thead>
-          <tr class="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold select-none">
+          <tr class="bg-slate-100 dark:bg-slate-900/90 border-b-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold select-none tracking-wide">
             <th
               v-for="col in columns"
               :key="col.key"
-              class="py-3.5 px-4 font-black"
+              class="py-3.5 px-4 font-black text-xs uppercase"
               :class="[
                 col.align === 'center' ? 'text-center' : col.align === 'left' ? 'text-left' : 'text-right',
                 col.headerClass || ''
@@ -21,8 +21,8 @@
           </tr>
         </thead>
 
-        <!-- جسم الجدول -->
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+        <!-- جسم الجدول: نصوص بألوان نظام التصميم الافتراضية عالية التباين (رمادي فاتح/أبيض قياسي بدون أي لون أخضر) -->
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-800 dark:text-slate-200 font-medium">
           <!-- حالة التحميل -->
           <tr v-if="loading">
             <td :colspan="columns.length" class="py-12 text-center text-slate-400">
@@ -62,11 +62,11 @@
             </td>
           </tr>
 
-          <!-- صفوف البيانات -->
+          <!-- صفوف البيانات مع نص ناصع ومشرق في الدارك موود -->
           <tr
             v-for="(row, idx) in data"
             :key="row.id || idx"
-            class="hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors group"
+            class="hover:bg-slate-50/80 dark:hover:bg-slate-800/80 transition-colors group dark:text-slate-100"
           >
             <td
               v-for="col in columns"
