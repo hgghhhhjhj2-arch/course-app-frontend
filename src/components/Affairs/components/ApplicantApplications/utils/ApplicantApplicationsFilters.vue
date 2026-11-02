@@ -50,22 +50,30 @@
       </div>
     </div>
 
-    <!-- شريط إحصائي للفلاتر النشطة إذا وجدت -->
-    <div
-      v-if="searchQuery || selectedCategory || selectedCourse"
-      class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px]"
-    >
-      <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-        <Filter class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
-        <span>تم العثور على <strong>{{ filteredCount }}</strong> طلب يطابق الفلترة الحالية</span>
+    <!-- شريط إحصائي ومحول طريقة العرض -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[11px]">
+      <div class="flex items-center gap-3">
+        <ViewModeToggle
+          :model-value="viewMode"
+          @update:model-value="$emit('update:viewMode', $event)"
+        />
+
+        <div v-if="searchQuery || selectedCategory || selectedCourse" class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+          <Filter class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
+          <span>تم العثور على <strong>{{ filteredCount }}</strong> طلب</span>
+          <button
+            type="button"
+            class="text-primary-700 dark:text-primary-400 hover:underline font-bold cursor-pointer mr-1.5"
+            @click="$emit('clear-filters')"
+          >
+            إعادة ضبط الفلاتر
+          </button>
+        </div>
       </div>
-      <button
-        type="button"
-        class="text-primary-700 dark:text-primary-400 hover:underline font-bold cursor-pointer"
-        @click="$emit('clear-filters')"
-      >
-        إعادة ضبط الفلاتر
-      </button>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        إجمالي النتائج: <strong class="text-slate-800 dark:text-slate-100 font-mono">{{ filteredCount }}</strong>
+      </div>
     </div>
   </div>
 </template>
@@ -73,6 +81,7 @@
 <script setup>
 import Select from 'primevue/select';
 import { Search, X, Filter } from 'lucide-vue-next';
+import ViewModeToggle from '@/shared/ui/Buttons/ViewModeToggle.vue';
 
 defineProps({
   searchQuery: {
@@ -99,12 +108,17 @@ defineProps({
     type: Number,
     default: 0,
   },
+  viewMode: {
+    type: String,
+    default: 'table',
+  },
 });
 
 defineEmits([
   'update:searchQuery',
   'update:selectedCategory',
   'update:selectedCourse',
+  'update:viewMode',
   'clear-filters',
 ]);
 </script>

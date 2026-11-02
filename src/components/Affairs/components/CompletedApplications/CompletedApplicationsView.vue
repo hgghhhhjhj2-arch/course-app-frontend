@@ -15,8 +15,9 @@
       :average-attendance="averageAttendance"
     />
 
-    <!-- 3. شريط الفلاتر والبحث مع تبويب حالة الدارس -->
+    <!-- 3. شريط الفلاتر والبحث مع تبويب حالة الدارس ومحول طريقة العرض -->
     <CompletedFilters
+      v-model:view-mode="viewMode"
       v-model:status-filter="statusFilter"
       v-model:search-query="searchQuery"
       v-model:selected-course="selectedCourse"
@@ -30,8 +31,8 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. حاوية الجدول المشترك والباجينيشن -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden">
+    <!-- 4. عرض البيانات: جدول أو كروت حسب طريقة العرض المحددة -->
+    <div v-if="viewMode === 'table'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden">
       <!-- جدول البيانات الرئيسي المستند إلى AppTable العام -->
       <CompletedTable
         :applications="paginatedApplications"
@@ -50,6 +51,28 @@
         :per-page-options="perPageOptions"
         item-label="دارس مقيد"
       />
+    </div>
+
+    <!-- شبكة الكروت في حال اختيار viewMode === 'grid' -->
+    <div v-else class="space-y-4">
+      <CompletedCardsGrid
+        :applications="paginatedApplications"
+        :is-filtered="Boolean(searchQuery || selectedCourse || selectedCategory || statusFilter !== 'all')"
+        @open-trainee-details="openTraineeDetails"
+        @open-application-details="openApplicationDetails"
+        @clear-filters="clearFilters"
+      />
+
+      <!-- شريط الباجينيشن لشبكة الكروت -->
+      <div v-if="filteredApplications.length > 0" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden">
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredApplications.length"
+          :per-page-options="perPageOptions"
+          item-label="دارس مقيد"
+        />
+      </div>
     </div>
 
     <!-- 5. النوافذ المنبثقة التفاعلية -->
@@ -82,11 +105,15 @@ import CompletedHeader from './utils/CompletedHeader.vue';
 import CompletedStats from './utils/CompletedStats.vue';
 import CompletedFilters from './utils/CompletedFilters.vue';
 import CompletedTable from './utils/CompletedTable.vue';
+import CompletedCardsGrid from './utils/CompletedCardsGrid.vue';
 import TraineeDetailsModal from '@/shared/ui/Modals/TraineeDetailsModal.vue';
 import CompletedApplicationModal from './utils/CompletedApplicationModal.vue';
 
 // استيراد البيانات من helpers
 import { INITIAL_COMPLETED_APPLICATIONS } from './helpers/completedMockData';
+
+// نمط العرض: جدول أو شبكة كروت
+const viewMode = ref('table');
 
 // حالة البيانات الرئيسية
 const applications = ref([...INITIAL_COMPLETED_APPLICATIONS]);

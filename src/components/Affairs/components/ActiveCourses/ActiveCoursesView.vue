@@ -21,8 +21,9 @@
       :average-attendance="averageAttendance"
     />
 
-    <!-- 3. شريط التبويبات السريعة والبحث وفلاتر القاعات والمحاضرين -->
+    <!-- 3. شريط التبويبات السريعة والبحث وفلاتر القاعات والمحاضرين ومحول العرض -->
     <ActiveCoursesFilters
+      v-model:view-mode="viewMode"
       v-model:search-query="searchQuery"
       v-model:active-tab="activeTab"
       v-model:selected-hall="selectedHall"
@@ -37,8 +38,8 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. حاوية الجدول الرئيسي للـ Active Courses والباجينيشن العام -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+    <!-- 4. عرض البيانات: جدول أو كروت حسب طريقة العرض المحددة -->
+    <div v-if="viewMode === 'table'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
       <!-- جدول الدورات الجارية -->
       <ActiveCoursesTable
         :rounds="paginatedRounds"
@@ -57,6 +58,28 @@
         :per-page-options="perPageOptions"
         item-label="دورة جارية"
       />
+    </div>
+
+    <!-- شبكة الكروت في حال اختيار viewMode === 'grid' -->
+    <div v-else class="space-y-4">
+      <ActiveCoursesCardsGrid
+        :rounds="paginatedRounds"
+        :is-filtered="Boolean(searchQuery || activeTab !== 'all' || selectedHall || selectedInstructor)"
+        @open-trainees="handleOpenTrainees"
+        @open-details="handleOpenDetails"
+        @clear-filters="clearFilters"
+      />
+
+      <!-- شريط الباجينيشن لشبكة الكروت -->
+      <div v-if="filteredRounds.length > 0" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredRounds.length"
+          :per-page-options="perPageOptions"
+          item-label="دورة جارية"
+        />
+      </div>
     </div>
 
     <!-- 5. نافذة كشف الدارسين المقيدين في الدفعة (RoundTraineesModal) -->
@@ -122,6 +145,7 @@ import ActiveCoursesHeader from './utils/ActiveCoursesHeader.vue';
 import ActiveCoursesStats from './utils/ActiveCoursesStats.vue';
 import ActiveCoursesFilters from './utils/ActiveCoursesFilters.vue';
 import ActiveCoursesTable from './utils/ActiveCoursesTable.vue';
+import ActiveCoursesCardsGrid from './utils/ActiveCoursesCardsGrid.vue';
 import RoundTraineesModal from './utils/RoundTraineesModal.vue';
 import RoundDetailsModal from './utils/RoundDetailsModal.vue';
 import CourseRoundModal from '@/components/Affairs/components/AllCourses/utils/CourseRoundModal.vue';
@@ -131,6 +155,9 @@ import { INITIAL_ACTIVE_ROUNDS } from './helpers/activeCoursesMockData';
 import { isRoundLectureToday } from './helpers/activeCoursesConstants';
 import { INITIAL_COURSES } from '@/components/Affairs/components/AllCourses/helpers/courseMockData';
 import { INITIAL_ARCHIVED_ROUNDS } from '@/components/Affairs/components/ArchivedCourses/helpers/archivedCoursesMockData';
+
+// --- نمط العرض (جدول أو كروت) ---
+const viewMode = ref('table');
 
 // --- الحالة الأساسية للبيانات ---
 const rounds = ref([...INITIAL_ACTIVE_ROUNDS]);

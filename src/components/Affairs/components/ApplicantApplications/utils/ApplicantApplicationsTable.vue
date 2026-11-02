@@ -67,8 +67,44 @@
       <div class="font-bold text-slate-800 dark:text-slate-200 max-w-[220px] truncate" :title="row.courseRound?.courseName">
         {{ row.courseRound?.courseName }}
       </div>
-      <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-        دفعة {{ row.courseRound?.roundNumber }} • تبدأ {{ formatDateOnly(row.courseRound?.startDate) }}
+      <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+        <span>دفعة {{ row.courseRound?.roundNumber }}</span>
+        <span>•</span>
+        <span>تبدأ {{ formatDateOnly(row.courseRound?.startDate) }}</span>
+      </div>
+      <!-- شارة المقاعد الشاغرة للدفعة -->
+      <div v-if="row.courseRound?.capacity" class="mt-1 flex items-center gap-1.5 text-[10px]">
+        <span
+          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-semibold border"
+          :class="
+            (row.courseRound.capacity - row.courseRound.enrolledCount) <= 0
+              ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'
+              : (row.courseRound.capacity - row.courseRound.enrolledCount) <= 5
+                ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800'
+                : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
+          "
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full"
+            :class="
+              (row.courseRound.capacity - row.courseRound.enrolledCount) <= 0
+                ? 'bg-rose-500'
+                : (row.courseRound.capacity - row.courseRound.enrolledCount) <= 5
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500'
+            "
+          ></span>
+          <span>
+            {{
+              (row.courseRound.capacity - row.courseRound.enrolledCount) <= 0
+                ? 'السعة مكتملة سداداً'
+                : `متبقي ${row.courseRound.capacity - row.courseRound.enrolledCount} مقعد شاغر`
+            }}
+          </span>
+        </span>
+        <span class="text-slate-400 dark:text-slate-500 font-mono">
+          ({{ row.courseRound.enrolledCount || 0 }}/{{ row.courseRound.capacity || 0 }})
+        </span>
       </div>
     </template>
 

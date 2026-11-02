@@ -18,6 +18,10 @@
         >
           {{ row.name }}
         </button>
+        <div v-if="row.instructorName" class="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-400 font-bold">
+          <UserCheck class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span>المحاضر المعتمد: {{ row.instructorName }}</span>
+        </div>
         <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 max-w-md leading-relaxed font-normal" :title="row.description">
           {{ row.description }}
         </p>
@@ -162,6 +166,7 @@ import {
   Trash2,
   CalendarPlus,
   FolderOpen,
+  UserCheck,
 } from 'lucide-vue-next';
 import AppTable from '@/shared/ui/Table/AppTable.vue';
 import { formatEgyptianCurrency, formatDate } from '../helpers/courseConstants';

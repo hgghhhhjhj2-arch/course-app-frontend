@@ -17,8 +17,9 @@
       :average-attendance="averageAttendance"
     />
 
-    <!-- 3. شريط التبويبات والبحث وفلاتر الدورات والمحاضرين -->
+    <!-- 3. شريط التبويبات والبحث وفلاتر الدورات والمحاضرين ومحول العرض -->
     <ArchivedCoursesFilters
+      v-model:view-mode="viewMode"
       v-model:search-query="searchQuery"
       v-model:active-tab="activeTab"
       v-model:selected-course="selectedCourse"
@@ -31,8 +32,8 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. حاوية الجدول الرئيسي للأرشيف والباجينيشن العام -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+    <!-- 4. عرض البيانات: جدول أو كروت حسب طريقة العرض المحددة -->
+    <div v-if="viewMode === 'table'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
       <!-- جدول الدورات السابقة -->
       <ArchivedCoursesTable
         :rounds="paginatedRounds"
@@ -50,6 +51,27 @@
         :per-page-options="perPageOptions"
         item-label="دورة سابقة"
       />
+    </div>
+
+    <!-- شبكة الكروت في حال اختيار viewMode === 'grid' -->
+    <div v-else class="space-y-4">
+      <ArchivedCoursesCardsGrid
+        :rounds="paginatedRounds"
+        :is-filtered="Boolean(searchQuery || activeTab !== 'all' || selectedCourse || selectedInstructor)"
+        @open-details="handleOpenDetails"
+        @clear-filters="clearFilters"
+      />
+
+      <!-- شريط الباجينيشن لشبكة الكروت -->
+      <div v-if="filteredRounds.length > 0" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredRounds.length"
+          :per-page-options="perPageOptions"
+          item-label="دورة سابقة"
+        />
+      </div>
     </div>
 
     <!-- 5. نافذة تفاصيل وسجل الدفعة الشاملة (الطلاب، التكلفة، المحاضر) -->
@@ -98,10 +120,14 @@ import ArchivedCoursesHeader from './utils/ArchivedCoursesHeader.vue';
 import ArchivedCoursesStats from './utils/ArchivedCoursesStats.vue';
 import ArchivedCoursesFilters from './utils/ArchivedCoursesFilters.vue';
 import ArchivedCoursesTable from './utils/ArchivedCoursesTable.vue';
+import ArchivedCoursesCardsGrid from './utils/ArchivedCoursesCardsGrid.vue';
 import ArchivedRoundDetailsModal from './utils/ArchivedRoundDetailsModal.vue';
 import TraineeDetailsModal from '@/shared/ui/Modals/TraineeDetailsModal.vue';
 import AppPagination from '@/shared/ui/Table/AppPagination.vue';
 import { INITIAL_ARCHIVED_ROUNDS } from './helpers/archivedCoursesMockData';
+
+// --- نمط العرض (جدول أو كروت) ---
+const viewMode = ref('table');
 
 // --- الحالة الأساسية للبيانات ---
 const rounds = ref([...INITIAL_ARCHIVED_ROUNDS]);

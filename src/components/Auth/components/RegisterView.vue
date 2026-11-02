@@ -18,7 +18,7 @@
       <!-- Error Alert at Top -->
       <div
         v-if="errorMsg"
-        class="mb-5 flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"
+        class="mb-5 flex items-center gap-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-semibold"
       >
         <AlertCircle class="w-4 h-4 shrink-0" />
         <span>{{ errorMsg }}</span>
@@ -55,19 +55,19 @@
       <!-- Error Alert above buttons -->
       <div
         v-if="errorMsg"
-        class="mt-4 flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-shake"
+        class="mt-4 flex items-center gap-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-semibold animate-shake"
       >
-        <AlertCircle class="w-4 h-4 shrink-0 text-rose-600" />
+        <AlertCircle class="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
         <span>{{ errorMsg }}</span>
       </div>
 
       <!-- Navigation Buttons: Back / Next / Submit -->
-      <div class="mt-6 flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
+      <div class="mt-6 flex items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <!-- Back Button -->
         <button
           v-if="currentStep > 1"
           type="button"
-          class="px-5 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+          class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
           @click="prevStep"
         >
           <ArrowRight class="w-4 h-4" />
@@ -100,11 +100,11 @@
     </form>
 
     <!-- Card Footer: Back to Login -->
-    <div class="px-6 sm:px-8 py-3.5 bg-slate-50 border-t border-slate-100 text-center text-xs">
-      <span class="text-slate-500 font-medium">لديك حساب مسجل بالفعل؟</span>
+    <div class="px-6 sm:px-8 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 text-center text-xs">
+      <span class="text-slate-500 dark:text-slate-400 font-medium">لديك حساب مسجل بالفعل؟</span>
       <RouterLink
         to="/auth/login"
-        class="text-primary-700 hover:text-primary-900 font-bold mr-1.5 transition-colors underline underline-offset-4"
+        class="text-primary-700 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 font-bold mr-1.5 transition-colors underline underline-offset-4"
       >
         تسجيل الدخول
       </RouterLink>

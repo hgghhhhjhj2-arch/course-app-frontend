@@ -32,10 +32,22 @@ const routes = [
       ...adminRoutes,
       // Shared cross-feature views
       {
+        path: 'notifications',
+        name: 'Notifications',
+        component: () => import('@/shared/components/Notifications/NotificationsView.vue'),
+        meta: { title: 'مركز الإشعارات والتنبيهات' },
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/shared/components/Settings/SettingsView.vue'),
+        meta: { title: 'إعدادات الحساب والملف الشخصي' },
+      },
+      {
         path: 'profile',
         name: 'Profile',
-        component: () => import('@/shared/components/Profile/ProfileView.vue'),
-        meta: { title: 'الملف الشخصي' },
+        component: () => import('@/shared/components/Settings/SettingsView.vue'),
+        meta: { title: 'إعدادات الحساب والملف الشخصي' },
       },
       {
         path: 'trainee-profile/:id?',

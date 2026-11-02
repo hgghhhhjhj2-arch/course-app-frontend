@@ -1,8 +1,8 @@
 <template>
-  <!-- عرض صفحة بيانات وسجل الدارس المشتركة لجميع المستخدمين والدارسين -->
-  <TraineeProfileView />
+  <!-- عرض صفحة الإعدادات والملف الشخصي المشتركة لجميع المستخدمين -->
+  <SettingsView />
 </template>
 
 <script setup>
-import TraineeProfileView from '../TraineeProfile/TraineeProfileView.vue';
+import SettingsView from '../Settings/SettingsView.vue';
 </script>

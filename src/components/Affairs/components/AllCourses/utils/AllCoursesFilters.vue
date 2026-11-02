@@ -66,8 +66,15 @@
         </button>
       </div>
 
-      <div class="text-xs text-slate-500 dark:text-slate-400 px-2 font-medium hidden md:block">
-        الدورات المعروضة: <strong class="text-slate-800 dark:text-slate-200">{{ filteredCount }}</strong>
+      <!-- محول طريقة العرض وعداد النتائج -->
+      <div class="flex items-center gap-3">
+        <ViewModeToggle
+          :model-value="viewMode"
+          @update:model-value="$emit('update:viewMode', $event)"
+        />
+        <div class="text-xs text-slate-500 dark:text-slate-400 px-2 font-medium hidden md:block">
+          الدورات المعروضة: <strong class="text-slate-800 dark:text-slate-200">{{ filteredCount }}</strong>
+        </div>
       </div>
     </div>
 
@@ -79,7 +86,7 @@
         <input
           :value="searchQuery"
           type="text"
-          placeholder="ابحث باسم الدورة في الكتالوج، أو التوصيف والمحتوى الأكاديمي..."
+          placeholder="ابحث باسم الدورة، اسم المحاضر المسؤول، أو التوصيف والمحتوى الأكاديمي..."
           class="w-full h-10 pr-10 pl-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
           @input="$emit('update:searchQuery', $event.target.value)"
         />
@@ -111,8 +118,13 @@
 <script setup>
 import { computed } from 'vue';
 import { Search, X, RotateCcw } from 'lucide-vue-next';
+import ViewModeToggle from '@/shared/ui/Buttons/ViewModeToggle.vue';
 
 const props = defineProps({
+  viewMode: {
+    type: String,
+    default: 'table',
+  },
   searchQuery: {
     type: String,
     default: '',
@@ -135,7 +147,7 @@ const props = defineProps({
   },
 });
 
-defineEmits(['update:searchQuery', 'update:statusFilter', 'clear-filters']);
+defineEmits(['update:viewMode', 'update:searchQuery', 'update:statusFilter', 'clear-filters']);
 
 const hasActiveFilters = computed(() => {
   return Boolean(props.searchQuery) || props.statusFilter !== 'all';

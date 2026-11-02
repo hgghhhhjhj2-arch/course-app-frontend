@@ -78,8 +78,15 @@
         </button>
       </div>
 
-      <div class="text-xs text-slate-500 dark:text-slate-400 px-2 font-medium hidden md:block">
-        الحركات المعروضة: <strong class="text-slate-800 dark:text-slate-200">{{ filteredCount }}</strong>
+      <!-- محول طريقة العرض وعداد النتائج -->
+      <div class="flex items-center gap-3">
+        <ViewModeToggle
+          :model-value="viewMode"
+          @update:model-value="$emit('update:viewMode', $event)"
+        />
+        <div class="text-xs text-slate-500 dark:text-slate-400 px-2 font-medium hidden md:block">
+          الحركات المعروضة: <strong class="text-slate-800 dark:text-slate-200">{{ filteredCount }}</strong>
+        </div>
       </div>
     </div>
 
@@ -152,8 +159,13 @@
 import { computed } from 'vue';
 import { Search, X, RotateCcw } from 'lucide-vue-next';
 import Select from 'primevue/select';
+import ViewModeToggle from '@/shared/ui/Buttons/ViewModeToggle.vue';
 
 const props = defineProps({
+  viewMode: {
+    type: String,
+    default: 'table',
+  },
   decisionFilter: {
     type: String,
     default: 'all',
@@ -197,6 +209,7 @@ const props = defineProps({
 });
 
 defineEmits([
+  'update:viewMode',
   'update:decisionFilter',
   'update:searchQuery',
   'update:selectedCourse',

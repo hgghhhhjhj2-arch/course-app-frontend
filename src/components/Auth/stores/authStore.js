@@ -46,6 +46,16 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(env.userKey);
   }
 
+  function updateUser(partial) {
+    if (!user.value) return;
+    user.value = { ...user.value, ...partial };
+    try {
+      localStorage.setItem(env.userKey, JSON.stringify(user.value));
+    } catch {
+      // ignore
+    }
+  }
+
   return {
     token,
     user,
@@ -54,5 +64,6 @@ export const useAuthStore = defineStore('auth', () => {
     defaultHomePath,
     setAuth,
     logout,
+    updateUser,
   };
 });

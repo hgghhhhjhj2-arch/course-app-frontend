@@ -18,8 +18,9 @@
       :total-trainees="totalTrainees"
     />
 
-    <!-- 3. شريط تبويبات الحالة والبحث الفوري بالاسم والتوصيف -->
+    <!-- 3. شريط تبويبات الحالة والبحث الفوري ومحول طريقة العرض -->
     <AllCoursesFilters
+      v-model:view-mode="viewMode"
       v-model:search-query="searchQuery"
       v-model:status-filter="statusFilter"
       :total-count="totalCourses"
@@ -28,8 +29,8 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. حاوية الجدول الرئيسي للكتالوج والباجينيشن الموحد -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+    <!-- 4. عرض البيانات: جدول أو كروت حسب طريقة العرض -->
+    <div v-if="viewMode === 'table'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
       <!-- جدول الدورات المعتمد على AppTable وفق حقول الـ ERD -->
       <AllCoursesTable
         :courses="paginatedCourses"
@@ -51,6 +52,31 @@
         :per-page-options="perPageOptions"
         item-label="دورة تدريبية"
       />
+    </div>
+
+    <!-- شبكة الكروت في حال اختيار viewMode === 'grid' -->
+    <div v-else class="space-y-4">
+      <AllCoursesCardsGrid
+        :courses="paginatedCourses"
+        :is-filtered="Boolean(searchQuery || statusFilter !== 'all')"
+        @edit-course="handleEditCourse"
+        @delete-course="handleDeleteCourse"
+        @create-round="handleOpenCreateRound($event.id)"
+        @view-rounds="handleViewRounds"
+        @view-details="handleViewCourseDetails"
+        @clear-filters="clearFilters"
+      />
+
+      <!-- شريط الباجينيشن لشبكة الكروت -->
+      <div v-if="filteredCourses.length > 0" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm dark:shadow-xl overflow-hidden">
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredCourses.length"
+          :per-page-options="perPageOptions"
+          item-label="دورة تدريبية"
+        />
+      </div>
     </div>
 
     <!-- 5. نافذة إضافة وتعديل بيانات الدورة والتسعير وفق الـ ERD (CourseFormModal) -->
@@ -146,6 +172,7 @@ import AllCoursesHeader from './utils/AllCoursesHeader.vue';
 import AllCoursesStats from './utils/AllCoursesStats.vue';
 import AllCoursesFilters from './utils/AllCoursesFilters.vue';
 import AllCoursesTable from './utils/AllCoursesTable.vue';
+import AllCoursesCardsGrid from './utils/AllCoursesCardsGrid.vue';
 import CourseFormModal from './utils/CourseFormModal.vue';
 import CourseDeleteModal from './utils/CourseDeleteModal.vue';
 import CourseRoundModal from './utils/CourseRoundModal.vue';
@@ -156,6 +183,9 @@ import TraineeDetailsModal from '@/shared/ui/Modals/TraineeDetailsModal.vue';
 import AppPagination from '@/shared/ui/Table/AppPagination.vue';
 import { INITIAL_COURSES, INITIAL_COURSE_ROUNDS } from './helpers/courseMockData';
 import { INITIAL_ARCHIVED_ROUNDS } from '@/components/Affairs/components/ArchivedCourses/helpers/archivedCoursesMockData';
+
+// --- نمط العرض (جدول أو كروت) ---
+const viewMode = ref('table');
 
 // --- حالة البيانات الرئيسية ---
 const courses = ref([...INITIAL_COURSES]);
@@ -229,13 +259,14 @@ const filteredCourses = computed(() => {
     if (statusFilter.value === 'active' && !course.isActive) return false;
     if (statusFilter.value === 'inactive' && course.isActive) return false;
 
-    // 2. البحث النصي بالاسم أو الوصف
+    // 2. البحث النصي بالاسم أو الوصف أو المحاضر المعتمد
     if (searchQuery.value) {
       const q = searchQuery.value.trim().toLowerCase();
       const name = course.name?.toLowerCase() || '';
       const desc = course.description?.toLowerCase() || '';
+      const inst = course.instructorName?.toLowerCase() || '';
 
-      if (!name.includes(q) && !desc.includes(q)) {
+      if (!name.includes(q) && !desc.includes(q) && !inst.includes(q)) {
         return false;
       }
     }
@@ -295,6 +326,8 @@ function handleSaveCourse(formData) {
         ...courses.value[idx],
         name: formData.name,
         description: formData.description,
+        instructorId: formData.instructorId,
+        instructorName: formData.instructorName,
         isActive: formData.isActive,
         pricings: { ...formData.pricings },
       };
@@ -306,6 +339,8 @@ function handleSaveCourse(formData) {
       id: Date.now(),
       name: formData.name,
       description: formData.description,
+      instructorId: formData.instructorId,
+      instructorName: formData.instructorName,
       isActive: formData.isActive,
       createdAt: new Date().toISOString(),
       pricings: { ...formData.pricings },

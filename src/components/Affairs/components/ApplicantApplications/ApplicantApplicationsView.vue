@@ -15,20 +15,24 @@
       :approved-today-count="approvedCount"
     />
 
-    <!-- 3. شريط الفلاتر والبحث (مع PrimeVue Select) -->
+    <!-- 3. شريط الفلاتر والبحث (مع محول طريقة العرض جدول / كروت) -->
     <ApplicantApplicationsFilters
       v-model:search-query="searchQuery"
       v-model:selected-category="selectedCategory"
       v-model:selected-course="selectedCourse"
+      v-model:view-mode="viewMode"
       :category-options="categoryOptions"
       :course-options="courseOptions"
       :filtered-count="filteredApplications.length"
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. جدول طلبات المتقدمين والباجينيشن في حاوية موحدة -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden">
-      <!-- جدول البيانات الرئيسي -->
+    <!-- 4. عرض البيانات: جدول بيانات أو شبكة كروت -->
+    <!-- أ. وضع جدول البيانات (Table View) -->
+    <div
+      v-if="viewMode === 'table'"
+      class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden"
+    >
       <ApplicantApplicationsTable
         :applications="paginatedApplications"
         :is-filtered="Boolean(searchQuery || selectedCategory || selectedCourse)"
@@ -38,7 +42,6 @@
         @clear-filters="clearFilters"
       />
 
-      <!-- شريط الباجينيشن المشترك (العناصر في اليمين والملخص في اليسار) -->
       <AppPagination
         v-if="filteredApplications.length > 0"
         v-model:current-page="currentPage"
@@ -47,6 +50,29 @@
         :per-page-options="perPageOptions"
         item-label="طلب"
       />
+    </div>
+
+    <!-- ب. وضع شبكة الكروت (Cards Grid View) -->
+    <div v-else class="space-y-4">
+      <ApplicantApplicationsCardsGrid
+        :applications="paginatedApplications"
+        @open-details="openDetails"
+        @open-approval="openApproval"
+        @open-rejection="openRejection"
+      />
+
+      <div
+        v-if="filteredApplications.length > 0"
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-xs"
+      >
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredApplications.length"
+          :per-page-options="perPageOptions"
+          item-label="طلب"
+        />
+      </div>
     </div>
 
     <!-- 5. رسالة تأكيد عائمة (Toast Alert) عند اتخاذ إجراء -->
@@ -108,6 +134,7 @@ import ApplicantApplicationsHeader from './utils/ApplicantApplicationsHeader.vue
 import ApplicantApplicationsStats from './utils/ApplicantApplicationsStats.vue';
 import ApplicantApplicationsFilters from './utils/ApplicantApplicationsFilters.vue';
 import ApplicantApplicationsTable from './utils/ApplicantApplicationsTable.vue';
+import ApplicantApplicationsCardsGrid from './utils/ApplicantApplicationsCardsGrid.vue';
 import AppPagination from '@/shared/ui/Table/AppPagination.vue';
 import TraineeDetailsModal from '@/shared/ui/Modals/TraineeDetailsModal.vue';
 import ApplicantApprovalModal from './utils/ApplicantApprovalModal.vue';
@@ -126,6 +153,7 @@ const approvedCount = ref(0);
 const searchQuery = ref('');
 const selectedCategory = ref(null);
 const selectedCourse = ref(null);
+const viewMode = ref('table');
 
 // خيارات القوائم المنسدلة لـ PrimeVue Select
 const categoryOptions = [

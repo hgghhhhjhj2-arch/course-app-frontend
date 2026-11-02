@@ -112,6 +112,32 @@
               </span>
             </div>
 
+            <!-- موقف المقاعد والسعة الاستيعابية المعتمدة -->
+            <div v-if="courseRound?.capacity">
+              <span class="text-slate-400 block text-[11px]">موقف المقاعد بالدفعة:</span>
+              <span class="font-bold flex items-center gap-1.5 mt-0.5 text-xs">
+                <Armchair class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400 shrink-0" />
+                <span
+                  :class="
+                    (courseRound.capacity - (courseRound.enrolledCount || 0)) <= 0
+                      ? 'text-rose-600 dark:text-rose-400 font-bold'
+                      : (courseRound.capacity - (courseRound.enrolledCount || 0)) <= 5
+                        ? 'text-amber-600 dark:text-amber-400 font-bold'
+                        : 'text-emerald-600 dark:text-emerald-400 font-bold'
+                  "
+                >
+                  {{
+                    (courseRound.capacity - (courseRound.enrolledCount || 0)) <= 0
+                      ? 'السعة مكتملة سداداً'
+                      : `متبقي ${courseRound.capacity - (courseRound.enrolledCount || 0)} مقعد شاغر`
+                  }}
+                </span>
+                <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">
+                  ({{ courseRound.enrolledCount || 0 }}/{{ courseRound.capacity }})
+                </span>
+              </span>
+            </div>
+
             <!-- الموقف المالي أو مهلة السداد -->
             <div v-if="application?.appliedPrice">
               <span class="text-slate-400 block text-[11px]">الرسوم المقررة للفئة:</span>
@@ -439,6 +465,7 @@ import {
   CheckCircle2,
   XCircle,
   CalendarClock,
+  Armchair,
 } from 'lucide-vue-next';
 
 const route = useRoute();

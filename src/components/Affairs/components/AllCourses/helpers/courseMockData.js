@@ -9,6 +9,8 @@ export const INITIAL_COURSES = [
     id: 1,
     name: 'الأمن السيبراني واختبار الاختراق المتقدم CEH v12',
     description: 'تأهيل المتدربين لاحتراف الأمن السيبراني، الفحص الأمني، التحقيق الجنائي الرقمي، واكتشاف الثغرات في الأنظمة والشبكات.',
+    instructorId: 1,
+    instructorName: 'د. طارق عبد الرحمن الجندي',
     isActive: true,
     createdAt: '2025-01-10T09:00:00Z',
     pricings: {
@@ -25,6 +27,8 @@ export const INITIAL_COURSES = [
     id: 2,
     name: 'تحليل البيانات المتقدم باستخدام Python و Power BI',
     description: 'معالجة البيانات الضخمة، النمذجة الإحصائية، بناء لوحات التحكم التفاعلية، واستخراج المؤشرات الاستراتيجية لصناع القرار.',
+    instructorId: 2,
+    instructorName: 'م. سارة محمود عزت',
     isActive: true,
     createdAt: '2025-02-15T10:30:00Z',
     pricings: {
@@ -41,6 +45,8 @@ export const INITIAL_COURSES = [
     id: 3,
     name: 'إدارة المشروعات الاحترافية PMP الإصدار السابع',
     description: 'المنهجية الاحترافية العالمية لإدارة المشروعات، إدارة المخاطر، الجداول الزمنية، ونماذج العمل الرشيقة Agile & Hybrid.',
+    instructorId: 3,
+    instructorName: 'د. أحمد كمال الدين الشريف',
     isActive: true,
     createdAt: '2024-11-20T08:00:00Z',
     pricings: {
@@ -57,6 +63,8 @@ export const INITIAL_COURSES = [
     id: 4,
     name: 'إدارة الشبكات المتقدمة Cisco CCNA 200-301',
     description: 'بناء وإدارة البنية التحتية للشبكات، بروتوكولات التوجيه، التبديل، أمن المنافذ، والتحكم في الشبكات المعرفة برمجياً SDN.',
+    instructorId: 4,
+    instructorName: 'م. مصطفى الشناوي',
     isActive: true,
     createdAt: '2025-01-05T11:15:00Z',
     pricings: {
@@ -73,6 +81,8 @@ export const INITIAL_COURSES = [
     id: 5,
     name: 'تطوير تطبيقات الويب المتكاملة Full Stack (Vue & Node.js)',
     description: 'تطوير الواجهات التفاعلية الحديثة بـ Vue 3 وبناء الواجهات البرمجية RESTful APIs وقواعد البيانات الحديثة.',
+    instructorId: 5,
+    instructorName: 'د. ياسمين خالد سالم',
     isActive: true,
     createdAt: '2025-03-01T12:00:00Z',
     pricings: {
@@ -89,6 +99,8 @@ export const INITIAL_COURSES = [
     id: 6,
     name: 'التسويق الرقمي وإدارة الحملات الإعلانية المتقدمة',
     description: 'استراتيجيات التسويق عبر وسائل التواصل، تحسين محركات البحث SEO، وإدارة الإعلانات الممولة وتحليل سلوك المستهلك.',
+    instructorId: 6,
+    instructorName: 'م. كريم الدين ممدوح',
     isActive: true,
     createdAt: '2025-03-12T09:45:00Z',
     pricings: {
@@ -105,6 +117,8 @@ export const INITIAL_COURSES = [
     id: 7,
     name: 'الذكاء الاصطناعي وتعلم الآلة التطبيقي (Machine Learning)',
     description: 'بناء النماذج التنبؤية، معالجة اللغات الطبيعية NLP، وتطبيقات الرؤية الحاسوبية بواسطة بايثون ومكتبات Scikit-Learn.',
+    instructorId: 7,
+    instructorName: 'أ.د. سامح عبد السلام النجار',
     isActive: true,
     createdAt: '2025-04-01T10:00:00Z',
     pricings: {
@@ -121,6 +135,8 @@ export const INITIAL_COURSES = [
     id: 8,
     name: 'صيانة الحواسب والدعم الفني المتقدم CompTIA A+',
     description: 'تشخيص أعطال المكونات المادية Hardware، صيانة أنظمة التشغيل، وإدارة الصيانة الوقائية للشبكات والمحطات.',
+    instructorId: 8,
+    instructorName: 'د. نهى عبد العزيز مهران',
     isActive: false,
     createdAt: '2024-10-15T08:30:00Z',
     pricings: {
@@ -235,6 +251,20 @@ export const INITIAL_INSTRUCTORS = [
     name: 'م. كريم الدين ممدوح',
     specialty: 'تسويق رقمي وإعلانات ممولة',
     phone: '01276543216',
+    isActive: true,
+  },
+  {
+    id: 7,
+    name: 'أ.د. سامح عبد السلام النجار',
+    specialty: 'ذكاء اصطناعي وتعلم آلي متقدم',
+    phone: '01019283747',
+    isActive: true,
+  },
+  {
+    id: 8,
+    name: 'د. نهى عبد العزيز مهران',
+    specialty: 'تصميم واجهات وتجربة المستخدم UI/UX',
+    phone: '01238475618',
     isActive: true,
   },
 ];

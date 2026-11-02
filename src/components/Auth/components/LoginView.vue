@@ -8,8 +8,8 @@
     <form class="p-6 sm:p-7 space-y-4" @submit.prevent="handleLogin">
       <!-- Email Field -->
       <div class="space-y-1.5 text-right">
-        <label for="login-email" class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-          <Mail class="w-3.5 h-3.5 text-slate-400" />
+        <label for="login-email" class="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+          <Mail class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
           البريد الإلكتروني
         </label>
         <div class="relative">
@@ -21,16 +21,16 @@
             autocomplete="email"
             placeholder="example@isi.edu.eg"
             dir="ltr"
-            class="w-full rounded-xl border border-slate-300 bg-slate-50/60 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all
-                   focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10 focus:shadow-xs"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all
+                   focus:border-primary-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-primary-500/10 focus:shadow-xs"
           />
         </div>
       </div>
 
       <!-- Password Field -->
       <div class="space-y-1.5 text-right">
-        <label for="login-password" class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-          <Lock class="w-3.5 h-3.5 text-slate-400" />
+        <label for="login-password" class="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+          <Lock class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
           كلمة المرور
         </label>
         <div class="relative">
@@ -42,12 +42,12 @@
             autocomplete="current-password"
             placeholder="••••••••"
             dir="ltr"
-            class="w-full rounded-xl border border-slate-300 bg-slate-50/60 px-4 py-2.5 pl-11 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all
-                   focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10 focus:shadow-xs"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 px-4 py-2.5 pl-11 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all
+                   focus:border-primary-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-primary-500/10 focus:shadow-xs"
           />
           <button
             type="button"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary-600 transition-colors cursor-pointer"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
             @click="showPassword = !showPassword"
           >
             <EyeOff v-if="showPassword" class="w-4 h-4" />
@@ -62,16 +62,16 @@
           <input
             v-model="form.rememberMe"
             type="checkbox"
-            class="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+            class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-primary-600 focus:ring-primary-500 cursor-pointer"
           />
-          <span class="text-xs text-slate-500 group-hover:text-slate-700 transition-colors">تذكرني على هذا الجهاز</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">تذكرني على هذا الجهاز</span>
         </label>
       </div>
 
       <!-- Error Alert -->
       <div
         v-if="errorMsg"
-        class="flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"
+        class="flex items-center gap-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-semibold"
       >
         <AlertCircle class="w-4 h-4 shrink-0" />
         <span>{{ errorMsg }}</span>
@@ -104,14 +104,14 @@
     <!-- Card Footer: Register Link -->
     <div class="px-6 sm:px-7 pb-6">
       <div class="relative flex items-center justify-center mb-4">
-        <span class="absolute inset-x-0 h-px bg-slate-200"></span>
-        <span class="relative bg-white px-3 text-[11px] text-slate-400 font-semibold">أو</span>
+        <span class="absolute inset-x-0 h-px bg-slate-200 dark:bg-slate-800"></span>
+        <span class="relative bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 dark:text-slate-500 font-semibold">أو</span>
       </div>
 
       <RouterLink
         to="/auth/register"
-        class="w-full py-2.5 border-2 border-slate-200 hover:border-primary-300 hover:bg-primary-50/50
-               text-slate-700 hover:text-primary-700 font-bold rounded-xl text-xs transition-all cursor-pointer
+        class="w-full py-2.5 border-2 border-slate-200 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-primary-50/50 dark:hover:bg-primary-950/30
+               text-slate-700 dark:text-slate-200 hover:text-primary-700 dark:hover:text-primary-400 font-bold rounded-xl text-xs transition-all cursor-pointer
                flex items-center justify-center gap-2"
       >
         <UserPlus class="w-4 h-4" />
@@ -120,14 +120,14 @@
     </div>
 
     <!-- Quick Demo Role Selector (Helper) -->
-    <div class="px-6 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px]">
-      <span class="text-slate-400 font-medium">تجربة دور:</span>
+    <div class="px-6 py-2.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+      <span class="text-slate-400 dark:text-slate-500 font-medium">تجربة دور:</span>
       <div class="flex items-center gap-1">
         <button
           v-for="r in mockRoles"
           :key="r.role"
           type="button"
-          class="px-2 py-0.5 rounded-lg bg-white border border-slate-200 hover:border-primary-400 hover:text-primary-700 text-slate-600 font-semibold text-[10px] transition-all cursor-pointer shadow-2xs"
+          class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-700 dark:hover:text-primary-300 text-slate-600 dark:text-slate-300 font-semibold text-[10px] transition-all cursor-pointer shadow-2xs"
           @click="quickLogin(r)"
         >
           {{ r.label }}

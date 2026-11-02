@@ -90,13 +90,19 @@
         </button>
       </div>
 
-      <!-- عداد النتائج المطابقة -->
-      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
-        <span>عرض</span>
-        <strong class="font-mono text-slate-800 dark:text-slate-100 font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
-          {{ filteredCount }}
-        </strong>
-        <span>من إجمالي {{ totalCount }} دورة منتهية</span>
+      <!-- محول طريقة العرض وعداد النتائج المطابقة -->
+      <div class="flex items-center gap-3">
+        <ViewModeToggle
+          :model-value="viewMode"
+          @update:model-value="$emit('update:viewMode', $event)"
+        />
+        <div class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+          <span>عرض</span>
+          <strong class="font-mono text-slate-800 dark:text-slate-100 font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
+            {{ filteredCount }}
+          </strong>
+          <span>من إجمالي {{ totalCount }} دورة منتهية</span>
+        </div>
       </div>
     </div>
   </div>
@@ -106,8 +112,13 @@
 import { computed } from 'vue';
 import Select from 'primevue/select';
 import { Search, X, RotateCcw } from 'lucide-vue-next';
+import ViewModeToggle from '@/shared/ui/Buttons/ViewModeToggle.vue';
 
 const props = defineProps({
+  viewMode: {
+    type: String,
+    default: 'table',
+  },
   searchQuery: {
     type: String,
     default: '',
@@ -147,6 +158,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
+  'update:viewMode',
   'update:searchQuery',
   'update:activeTab',
   'update:selectedCourse',

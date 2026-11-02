@@ -63,6 +63,12 @@
       <div class="p-6 pb-2 space-y-4 shrink-0">
         <!-- وصف الدورة وتسعير الفئات -->
         <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-3">
+          <div v-if="course.instructorName" class="flex items-center gap-2 pb-2.5 border-b border-slate-200/60 dark:border-slate-700/60">
+            <UserCheck class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span class="text-xs text-slate-600 dark:text-slate-300">
+              المحاضر المعتمد للدورة: <strong class="font-black text-slate-800 dark:text-slate-100">{{ course.instructorName }}</strong>
+            </span>
+          </div>
           <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
             {{ course.description }}
           </p>
@@ -377,6 +383,7 @@ import {
   GraduationCap,
   MapPin,
   FolderCheck,
+  UserCheck,
 } from 'lucide-vue-next';
 import {
   formatEgyptianCurrency,

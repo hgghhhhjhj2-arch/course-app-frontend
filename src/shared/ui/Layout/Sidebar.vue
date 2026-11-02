@@ -41,18 +41,21 @@
         <X class="w-5 h-5" />
       </button>
 
-      <!-- 1. الجزء العلوي: الصورة الشخصية (دائرة) + الاسم + الرول -->
-      <div
+      <!-- 1. الجزء العلوي: الصورة الشخصية (دائرة) + الاسم + الرول (قابل للضغط للانتقال للإعدادات) -->
+      <RouterLink
+        to="/settings"
+        :title="isCollapsed ? 'الملف الشخصي والإعدادات' : 'تعديل الملف الشخصي والإعدادات'"
         :class="[
-          'flex flex-col items-center text-center border-b border-slate-100 dark:border-slate-800/80 transition-all duration-300 shrink-0',
+          'group/user flex flex-col items-center text-center border-b border-slate-100 dark:border-slate-800/80 transition-all duration-300 shrink-0 cursor-pointer hover:bg-slate-50/70 dark:hover:bg-slate-800/30',
           isCollapsed ? 'py-4 px-2' : 'py-4 px-4'
         ]"
+        @click="$emit('close')"
       >
         <!-- صورة المستخدم (دائرة كاملة أنيقة كرمز أساسي مثل الأيقونة العلوية في الصورة) -->
         <div class="relative transition-all duration-300">
           <div
             :class="[
-              'p-0.5 shadow-md bg-gradient-to-tr from-primary-600 to-primary-700 rounded-full transition-all duration-300',
+              'p-0.5 shadow-md bg-gradient-to-tr from-primary-600 to-primary-700 rounded-full transition-all duration-300 group-hover/user:scale-105',
               isCollapsed ? 'w-11 h-11' : 'w-14 h-14'
             ]"
           >
@@ -89,7 +92,7 @@
           class="transition-all duration-200"
           :class="isCollapsed ? 'opacity-0 h-0 overflow-hidden pointer-events-none mt-0' : 'opacity-100 mt-2'"
         >
-          <h2 class="text-sm font-black text-slate-800 dark:text-slate-100 font-heading leading-tight max-w-[200px] truncate">
+          <h2 class="text-sm font-black text-slate-800 dark:text-slate-100 group-hover/user:text-primary-600 dark:group-hover/user:text-primary-400 font-heading leading-tight max-w-[200px] truncate transition-colors">
             {{ authStore.user?.fullName || 'مستخدم المنظومة' }}
           </h2>
           <div class="mt-1">
@@ -98,7 +101,7 @@
             </span>
           </div>
         </div>
-      </div>
+      </RouterLink>
 
       <!-- 2. السكشن الأساسي: رقاقات الأيقونات الدائرية المستوحاة من الصورة -->
       <nav class="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar px-2.5 py-3 overflow-x-hidden">
@@ -174,14 +177,14 @@
       >
         <!-- الإشعارات (فوق الإعدادات) -->
         <RouterLink
-          to="/affairs/attendance"
+          to="/notifications"
           :title="isCollapsed ? 'مركز الإشعارات' : ''"
           :class="[
             'flex items-center transition-colors duration-150 cursor-pointer relative group select-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none border',
             isCollapsed
               ? 'w-11 h-11 rounded-full mx-auto justify-center'
               : 'w-full h-10 px-2 rounded-2xl gap-2.5',
-            isActive('/affairs/attendance')
+            isActive('/notifications')
               ? isCollapsed
                 ? 'bg-primary-50 text-primary-800 border-primary-300 dark:bg-slate-800 dark:border-primary-500/60 dark:text-white shadow-sm font-bold'
                 : 'bg-primary-50 text-primary-800 border-primary-200 dark:bg-slate-800 dark:border-primary-500/50 dark:text-white shadow-2xs font-bold'
@@ -196,7 +199,7 @@
             v-if="!isCollapsed"
             :class="[
               'w-7 h-7 rounded-full shrink-0 flex items-center justify-center transition-colors',
-              isActive('/affairs/attendance')
+              isActive('/notifications')
                 ? 'bg-primary-100 dark:bg-primary-500/25 text-primary-700 dark:text-primary-300'
                 : 'bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
             ]"
@@ -206,10 +209,11 @@
           <div v-else class="relative flex items-center justify-center">
             <Bell
               class="w-5 h-5 transition-colors"
-              :class="isActive('/affairs/attendance') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
+              :class="isActive('/notifications') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
             />
             <span
-              class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900"
+              v-if="notificationsStore.unreadCount > 0"
+              class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900 animate-pulse"
             ></span>
           </div>
 
@@ -220,21 +224,23 @@
             مركز الإشعارات
           </span>
           <span
-            v-if="!isCollapsed"
-            class="w-2 h-2 rounded-full bg-amber-500 shrink-0 mr-auto"
-          ></span>
+            v-if="!isCollapsed && notificationsStore.unreadCount > 0"
+            class="px-1.5 py-0.2 rounded-full bg-amber-500 text-white font-black text-[10px] shrink-0 mr-auto"
+          >
+            {{ notificationsStore.unreadCount }}
+          </span>
         </RouterLink>
 
         <!-- الإعدادات والملف الشخصي (تحت الإشعارات) -->
         <RouterLink
-          to="/profile"
+          to="/settings"
           :title="isCollapsed ? 'الإعدادات والملف الشخصي' : ''"
           :class="[
             'flex items-center transition-colors duration-150 cursor-pointer group select-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none border',
             isCollapsed
               ? 'w-11 h-11 rounded-full mx-auto justify-center'
               : 'w-full h-10 px-2 rounded-2xl gap-2.5',
-            isActive('/profile')
+            isActive('/settings') || isActive('/profile')
               ? isCollapsed
                 ? 'bg-primary-50 text-primary-800 border-primary-300 dark:bg-slate-800 dark:border-primary-500/60 dark:text-white shadow-sm font-bold'
                 : 'bg-primary-50 text-primary-800 border-primary-200 dark:bg-slate-800 dark:border-primary-500/50 dark:text-white shadow-2xs font-bold'
@@ -248,7 +254,7 @@
             v-if="!isCollapsed"
             :class="[
               'w-7 h-7 rounded-full shrink-0 flex items-center justify-center transition-colors',
-              isActive('/profile')
+              isActive('/settings') || isActive('/profile')
                 ? 'bg-primary-100 dark:bg-primary-500/25 text-primary-700 dark:text-primary-300'
                 : 'bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
             ]"
@@ -258,7 +264,7 @@
           <div v-else class="flex items-center justify-center">
             <Settings
               class="w-5 h-5 transition-colors"
-              :class="isActive('/profile') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
+              :class="isActive('/settings') || isActive('/profile') ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'"
             />
           </div>
           <span
@@ -289,6 +295,7 @@ import {
   ShieldCheck,
 } from 'lucide-vue-next';
 import { useAuthStore } from '@/components/Auth/stores/authStore';
+import { useNotificationsStore } from '@/shared/stores/notificationsStore';
 import { ROLES, ROLE_LABELS } from '@/shared/constants/roles';
 
 // استيراد إعدادات السايدبار المقسمة لكل كمبوننت / دومين
@@ -313,6 +320,7 @@ defineEmits(['close', 'toggle-collapse']);
 
 const route = useRoute();
 const authStore = useAuthStore();
+const notificationsStore = useNotificationsStore();
 
 const roleLabel = computed(() => {
   return ROLE_LABELS[authStore.user?.role] || authStore.user?.role || 'مستخدم النظام';

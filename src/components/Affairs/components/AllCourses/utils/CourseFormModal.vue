@@ -24,7 +24,7 @@
               {{ isEdit ? 'تعديل بيانات الدورة التدريبية' : 'إضافة دورة تدريبية جديدة للكتالوج' }}
             </h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {{ isEdit ? 'تعديل اسم الدورة، التوصيف الأكاديمي، والأسعار المعتمدة للفئات' : 'تسجيل دورة جديدة بالكتالوج واعتماد أسعار الفئات الأربعة' }}
+              {{ isEdit ? 'تعديل اسم الدورة، المحاضر المسؤول، التوصيف الأكاديمي، والأسعار المعتمدة للفئات' : 'تسجيل دورة جديدة بالكتالوج، تحديد المحاضر المسؤول، واعتماد أسعار الفئات الأربعة' }}
             </p>
           </div>
         </div>
@@ -54,7 +54,64 @@
           />
         </div>
 
-        <!-- ب. التوصيف والمحتوى الأكاديمي (Courses.Description) -->
+        <!-- ب. المحاضر المعتمد للدورة من قائمة المحاضرين المسجلين في السيستم -->
+        <div class="space-y-1.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+          <label class="font-bold text-slate-700 dark:text-slate-200 block text-xs flex items-center gap-1.5">
+            <UserCheck class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>المحاضر المعتمد (المسؤول عن شرح الدورة) <span class="text-rose-500">*</span></span>
+          </label>
+
+          <Select
+            v-model="form.instructorId"
+            :options="instructorOptions"
+            option-label="displayName"
+            option-value="id"
+            filter
+            filter-placeholder="ابحث بالاسم أو التخصص..."
+            placeholder="اختر المحاضر الذي سيشرح الدورة من قائمة المحاضرين..."
+            class="w-full text-xs font-bold rounded-xl h-10 flex items-center bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center justify-between w-full py-0.5 text-xs">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-[10px]">
+                    <UserCheck class="w-3.5 h-3.5" />
+                  </div>
+                  <span class="font-bold text-slate-800 dark:text-slate-100">{{ option.name }}</span>
+                </div>
+                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60">
+                  {{ option.specialty }}
+                </span>
+              </div>
+            </template>
+          </Select>
+
+          <!-- بطاقة معاينة المحاضر المختار -->
+          <div
+            v-if="selectedInstructor"
+            class="mt-2 p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 flex items-center justify-between text-xs animate-fade-in"
+          >
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                <UserCheck class="w-4 h-4" />
+              </div>
+              <div>
+                <span class="font-bold text-slate-800 dark:text-slate-100 block">{{ selectedInstructor.name }}</span>
+                <span class="text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">{{ selectedInstructor.specialty }}</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1.5 shrink-0">
+              <Phone class="w-3 h-3 text-slate-400" />
+              <span>{{ selectedInstructor.phone }}</span>
+            </div>
+          </div>
+          <p v-else class="text-[11px] text-slate-400 pt-0.5">
+            يتم اختيار المحاضر المعتمد من قاعدة بيانات المحاضرين المسجلين في السيستم.
+          </p>
+        </div>
+
+        <!-- ج. التوصيف والمحتوى الأكاديمي (Courses.Description) -->
         <div class="space-y-1">
           <label class="font-bold text-slate-700 dark:text-slate-200 block">
             توصيف ومحتوى الدورة <span class="text-rose-500">*</span>
@@ -68,7 +125,7 @@
           ></textarea>
         </div>
 
-        <!-- ج. حالة الدورة في الكتالوج (Courses.IsActive) -->
+        <!-- د. حالة الدورة في الكتالوج (Courses.IsActive) -->
         <div class="space-y-1">
           <label class="font-bold text-slate-700 dark:text-slate-200 block">
             حالة الدورة بالكتالوج (IsActive)
@@ -85,7 +142,7 @@
           </label>
         </div>
 
-        <!-- د. أسعار الدورة بحسب فئات المتدربين (CoursePricings) -->
+        <!-- هـ. أسعار الدورة بحسب فئات المتدربين (CoursePricings) -->
         <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-700">
             <h4 class="font-black text-slate-800 dark:text-slate-100 text-xs flex items-center gap-1.5">
@@ -188,8 +245,18 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { Plus, Edit, X, Check, DollarSign } from 'lucide-vue-next';
+import Select from 'primevue/select';
+import {
+  Plus,
+  Edit,
+  X,
+  Check,
+  DollarSign,
+  UserCheck,
+  Phone,
+} from 'lucide-vue-next';
 import { INITIAL_COURSE_FORM } from '../helpers/courseConstants';
+import { INITIAL_INSTRUCTORS } from '../helpers/courseMockData';
 
 const props = defineProps({
   isOpen: {
@@ -208,6 +275,22 @@ const isEdit = computed(() => Boolean(props.course && props.course.id));
 
 const form = ref(JSON.parse(JSON.stringify(INITIAL_COURSE_FORM)));
 
+// خيارات المحاضرين المسجلين في السيستم
+const instructorOptions = computed(() => {
+  return INITIAL_INSTRUCTORS.filter((i) => i.isActive).map((i) => ({
+    id: i.id,
+    name: i.name,
+    specialty: i.specialty,
+    phone: i.phone,
+    displayName: `${i.name} — (${i.specialty})`,
+  }));
+});
+
+// المحاضر المحدد حالياً
+const selectedInstructor = computed(() => {
+  return instructorOptions.value.find((i) => i.id === form.value.instructorId) || null;
+});
+
 watch(
   () => [props.isOpen, props.course],
   () => {
@@ -216,6 +299,7 @@ watch(
         id: props.course.id,
         name: props.course.name || '',
         description: props.course.description || '',
+        instructorId: props.course.instructorId || null,
         isActive: props.course.isActive !== false,
         pricings: {
           Civilian: props.course.pricings?.Civilian ?? 4000,
@@ -226,6 +310,10 @@ watch(
       };
     } else if (props.isOpen) {
       form.value = JSON.parse(JSON.stringify(INITIAL_COURSE_FORM));
+      // اختيار أول محاضر افتراضياً لتسهيل الاستخدام
+      if (instructorOptions.value.length > 0 && !form.value.instructorId) {
+        form.value.instructorId = instructorOptions.value[0].id;
+      }
     }
   },
   { immediate: true }
@@ -233,6 +321,11 @@ watch(
 
 function handleSubmit() {
   if (!form.value.name.trim()) return;
-  emit('save', JSON.parse(JSON.stringify(form.value)));
+  const inst = selectedInstructor.value;
+  emit('save', {
+    ...JSON.parse(JSON.stringify(form.value)),
+    instructorName: inst?.name || '',
+    instructorSpecialty: inst?.specialty || '',
+  });
 }
 </script>

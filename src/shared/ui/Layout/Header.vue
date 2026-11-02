@@ -66,7 +66,7 @@
         <Moon v-else class="w-4 h-4 text-slate-600" />
       </button>
 
-      <!-- 3. أيقونة الإشعارات (رقاقة دائرية مع شارة تنبيه) -->
+      <!-- 3. أيقونة الإشعارات (رقاقة دائرية مع شارة تنبيه تفاعلية) -->
       <div class="relative">
         <button
           type="button"
@@ -75,48 +75,91 @@
           @click="showNotifications = !showNotifications"
         >
           <Bell class="w-4 h-4" />
-          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+          <span
+            v-if="notificationsStore.unreadCount > 0"
+            class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900 animate-pulse"
+          ></span>
         </button>
 
         <!-- قائمة الإشعارات المنسدلة (كبسولة منحنية الحواف) -->
         <div
           v-if="showNotifications"
-          class="absolute left-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-slate-800 p-3.5 z-50 animate-fade-in text-right"
+          class="absolute left-0 mt-3 w-80 sm:w-88 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-slate-800 p-3.5 z-50 animate-fade-in text-right"
         >
           <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
             <span class="text-xs font-bold text-slate-800 dark:text-slate-100">التنبيهات والإشعارات</span>
-            <span class="text-[10px] bg-primary-50 dark:bg-primary-950/70 text-primary-700 dark:text-primary-300 font-bold px-2.5 py-0.5 rounded-full border border-primary-100 dark:border-primary-900/60">3 جديدة</span>
+            <span
+              v-if="notificationsStore.unreadCount > 0"
+              class="text-[10px] bg-primary-50 dark:bg-primary-950/70 text-primary-700 dark:text-primary-300 font-bold px-2.5 py-0.5 rounded-full border border-primary-100 dark:border-primary-900/60"
+            >
+              {{ notificationsStore.unreadCount }} جديدة
+            </span>
+            <span v-else class="text-[10px] text-slate-400 font-semibold">
+              لا توجد جديدة
+            </span>
           </div>
-          <div class="space-y-2 max-h-60 overflow-y-auto">
-            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50/40 dark:hover:bg-slate-800 transition-colors text-xs space-y-0.5 cursor-pointer">
-              <p class="font-bold text-slate-700 dark:text-slate-200">تم اعتماد مواعيد دورة الأمن السيبراني</p>
-              <span class="text-[10px] text-slate-400 dark:text-slate-500">منذ 15 دقيقة • شؤون الدارسين</span>
-            </div>
-            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50/40 dark:hover:bg-slate-800 transition-colors text-xs space-y-0.5 cursor-pointer">
-              <p class="font-bold text-slate-700 dark:text-slate-200">طلب تسجيل متدرب جديد قيد المراجعة</p>
-              <span class="text-[10px] text-slate-400 dark:text-slate-500">منذ ساعة • البوابة</span>
-            </div>
-            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50/40 dark:hover:bg-slate-800 transition-colors text-xs space-y-0.5 cursor-pointer">
-              <p class="font-bold text-slate-700 dark:text-slate-200">تذكير بسداد رسوم دورة الذكاء الاصطناعي</p>
-              <span class="text-[10px] text-slate-400 dark:text-slate-500">اليوم 09:30 ص</span>
+
+          <!-- Notification Items (Latest 4) -->
+          <div class="space-y-1.5 max-h-72 overflow-y-auto">
+            <div
+              v-for="item in notificationsStore.notifications.slice(0, 4)"
+              :key="item.id"
+              :class="[
+                'p-2.5 rounded-2xl transition-all text-xs space-y-0.5 cursor-pointer border',
+                item.isRead
+                  ? 'bg-slate-50/70 dark:bg-slate-800/40 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/80'
+                  : 'bg-primary-50/50 dark:bg-primary-950/30 border-primary-100 dark:border-primary-900/50 hover:bg-primary-50 dark:hover:bg-primary-950/50'
+              ]"
+              @click="handleNotificationClick(item)"
+            >
+              <div class="flex items-center justify-between">
+                <p class="font-bold text-slate-800 dark:text-slate-100 text-[11px] truncate flex-1">
+                  {{ item.title }}
+                </p>
+                <span
+                  v-if="!item.isRead"
+                  class="w-1.5 h-1.5 rounded-full bg-primary-600 shrink-0 mr-1.5"
+                ></span>
+              </div>
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 block">
+                {{ item.createdAt }} • {{ item.sender }}
+              </span>
             </div>
           </div>
-          <div class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-center">
-            <button
-              type="button"
-              class="text-[11px] font-bold text-primary-700 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 cursor-pointer"
+
+          <!-- Dropdown Footer -->
+          <div class="pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-bold">
+            <RouterLink
+              to="/notifications"
+              class="text-primary-700 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 transition-colors flex items-center gap-1"
               @click="showNotifications = false"
             >
-              إغلاق القائمة
+              <span>مركز الإشعارات ({{ notificationsStore.notifications.length }})</span>
+            </RouterLink>
+            <button
+              type="button"
+              class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              @click="showNotifications = false"
+            >
+              إغلاق
             </button>
           </div>
         </div>
       </div>
 
+      <!-- 4. زر الإعدادات والملف الشخصي السريع -->
+      <RouterLink
+        to="/settings"
+        class="w-10 h-10 rounded-full bg-slate-100/80 dark:bg-slate-800/60 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700 hover:text-primary-600 dark:hover:text-primary-400 transition-all cursor-pointer shadow-xs border border-transparent dark:border-slate-800"
+        title="إعدادات الحساب والملف الشخصي"
+      >
+        <Settings class="w-4 h-4" />
+      </RouterLink>
+
       <!-- فاصل عمودي خفيف -->
       <span class="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1"></span>
 
-      <!-- 3. زر تسجيل الخروج (كبسولة دائرية بأناقة بالغة في أقصى اليسار) -->
+      <!-- 5. زر تسجيل الخروج (كبسولة دائرية بأناقة بالغة في أقصى اليسار) -->
       <button
         type="button"
         class="h-10 px-3.5 rounded-full bg-rose-50/70 hover:bg-rose-100/90 dark:bg-rose-950/30 dark:hover:bg-rose-950/60 border border-rose-200/80 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center gap-2 cursor-pointer transition-all shadow-xs"
@@ -132,19 +175,31 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { Menu, LogOut, Bell, Sun, Moon, Maximize, Minimize } from 'lucide-vue-next';
+import { useRouter, RouterLink } from 'vue-router';
+import { Menu, LogOut, Bell, Sun, Moon, Maximize, Minimize, Settings } from 'lucide-vue-next';
 import { useAuthStore } from '@/components/Auth/stores/authStore';
 import { useTheme } from '@/shared/composables/useTheme';
+import { useNotificationsStore } from '@/shared/stores/notificationsStore';
 
 defineEmits(['toggle-sidebar']);
 
 const router = useRouter();
 const authStore = useAuthStore();
 const { theme, toggleTheme } = useTheme();
+const notificationsStore = useNotificationsStore();
 
 const showNotifications = ref(false);
 const isFullscreen = ref(false);
+
+function handleNotificationClick(item) {
+  notificationsStore.markAsRead(item.id);
+  showNotifications.value = false;
+  if (item.link) {
+    router.push(item.link);
+  } else {
+    router.push('/notifications');
+  }
+}
 
 function toggleFullscreen() {
   if (!document.fullscreenElement) {

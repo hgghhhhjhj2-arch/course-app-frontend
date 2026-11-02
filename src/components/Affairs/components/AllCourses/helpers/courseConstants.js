@@ -31,6 +31,7 @@ export const INITIAL_COURSE_FORM = {
   id: null,
   name: '',
   description: '',
+  instructorId: null,
   isActive: true,
   pricings: {
     Civilian: 4000,

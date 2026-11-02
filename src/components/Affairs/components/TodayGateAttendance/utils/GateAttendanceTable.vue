@@ -34,9 +34,14 @@
         </div>
 
         <div class="min-w-0">
-          <div class="font-bold text-slate-800 dark:text-slate-100 truncate max-w-[180px]" :title="row.trainee?.fullName">
+          <button
+            type="button"
+            class="font-bold text-slate-800 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400 truncate max-w-[180px] text-right cursor-pointer transition-colors block"
+            :title="`عرض تفاصيل وسجل الدارس ${row.trainee?.fullName}`"
+            @click="$emit('open-details', row)"
+          >
             {{ row.trainee?.fullName }}
-          </div>
+          </button>
           <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono mt-0.5">
             {{ row.trainee?.nationalId }} • {{ row.trainee?.phone }}
           </div>

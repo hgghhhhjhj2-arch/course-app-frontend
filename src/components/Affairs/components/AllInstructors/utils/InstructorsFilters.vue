@@ -79,38 +79,11 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- محول طريقة العرض (جدول / شبكة كروت) -->
-        <div class="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <button
-            type="button"
-            class="h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-            :class="
-              viewMode === 'table'
-                ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-2xs font-black'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            "
-            title="عرض كجدول بيانات"
-            @click="$emit('update:viewMode', 'table')"
-          >
-            <LayoutList class="w-3.5 h-3.5" />
-            <span class="hidden sm:inline">جدول</span>
-          </button>
-
-          <button
-            type="button"
-            class="h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-            :class="
-              viewMode === 'grid'
-                ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-2xs font-black'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            "
-            title="عرض كبطاقات شبكية"
-            @click="$emit('update:viewMode', 'grid')"
-          >
-            <LayoutGrid class="w-3.5 h-3.5" />
-            <span class="hidden sm:inline">كروت</span>
-          </button>
-        </div>
+        <!-- محول طريقة العرض المشترك -->
+        <ViewModeToggle
+          :model-value="viewMode"
+          @update:model-value="$emit('update:viewMode', $event)"
+        />
 
         <!-- عداد النتائج المطابقة -->
         <div class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
@@ -128,7 +101,8 @@
 <script setup>
 import { computed } from 'vue';
 import Select from 'primevue/select';
-import { Search, X, RotateCcw, LayoutList, LayoutGrid } from 'lucide-vue-next';
+import { Search, X, RotateCcw } from 'lucide-vue-next';
+import ViewModeToggle from '@/shared/ui/Buttons/ViewModeToggle.vue';
 
 const props = defineProps({
   searchQuery: {

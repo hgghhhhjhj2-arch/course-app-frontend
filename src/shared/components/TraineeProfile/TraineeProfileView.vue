@@ -123,6 +123,27 @@ import TraineeCertificateModal from './utils/TraineeCertificateModal.vue';
 import QrPassModal from './utils/QrPassModal.vue';
 import { MOCK_TRAINEES } from './helpers/traineeProfileMockData';
 
+const props = defineProps({
+  traineeId: {
+    type: [Number, String],
+    default: null,
+  },
+  trainee: {
+    type: Object,
+    default: null,
+  },
+  initialTab: {
+    type: String,
+    default: null,
+  },
+  fromPath: {
+    type: String,
+    default: '',
+  },
+});
+
+const emit = defineEmits(['back']);
+
 const route = useRoute();
 const router = useRouter();
 
@@ -130,12 +151,12 @@ const router = useRouter();
 const allTrainees = ref([...MOCK_TRAINEES]);
 const activeTraineeId = ref(1);
 
-// التبويب الافتراضي الأول هو بيانات البطاقة والمستندات
-const activeTab = ref('civil');
+// التبويب النشط (يقبل initialTab كـ prop أو query.tab أو الافتراضي civil)
+const activeTab = ref(props.initialTab || route.query?.tab || 'civil');
 
 // --- مسار العودة للصفحة السابقة (?from=...) ---
 const fromPath = computed(() => {
-  return route.query?.from ? decodeURIComponent(route.query.from) : '';
+  return props.fromPath || (route.query?.from ? decodeURIComponent(route.query.from) : '');
 });
 
 // --- المودالات ---
@@ -148,8 +169,11 @@ const selectedCertCourse = ref(null);
 const isQrModalOpen = ref(false);
 const selectedQrCourse = ref(null);
 
-// استخراج المتدرب النشط
+// استخراج المتدرب النشط (إذا تم تمرير كائن trainee مباشرة كـ prop نستخدمه، وإلا نبحث بالـ id)
 const currentTrainee = computed(() => {
+  if (props.trainee) {
+    return props.trainee;
+  }
   return (
     allTrainees.value.find((t) => t.id === Number(activeTraineeId.value)) ||
     allTrainees.value[0]
@@ -171,14 +195,26 @@ const overallAttendanceRate = computed(() => {
   return Math.round(sum / all.length);
 });
 
-// قراءة المتدرب من الرابط عند التحميل
+// قراءة المتدرب والتبويب من الرابط أو الخصائص عند التحميل
 function syncTraineeFromRoute() {
-  const paramId = route.params?.id || route.query?.traineeId;
+  const paramId = props.traineeId || route.params?.id || route.query?.traineeId;
+  const nationalId = route.query?.nationalId;
   if (paramId) {
     const found = allTrainees.value.find((t) => t.id === Number(paramId));
     if (found) {
       activeTraineeId.value = found.id;
     }
+  } else if (nationalId) {
+    const found = allTrainees.value.find((t) => t.nationalId === nationalId);
+    if (found) {
+      activeTraineeId.value = found.id;
+    }
+  }
+
+  // مزامنة التبويب المحدد
+  const targetTab = props.initialTab || route.query?.tab;
+  if (targetTab) {
+    activeTab.value = targetTab;
   }
 }
 
@@ -187,7 +223,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [route.params?.id, route.query?.traineeId],
+  () => [props.traineeId, props.trainee, props.initialTab, route.params?.id, route.query?.traineeId, route.query?.tab],
   () => {
     syncTraineeFromRoute();
   }
@@ -199,12 +235,16 @@ function handleChangeTrainee(newId) {
 }
 
 function handleBack() {
+  emit('back');
+  if (props.fromPath || props.trainee) {
+    return;
+  }
   if (fromPath.value) {
     router.push(fromPath.value);
   } else if (window.history.length > 1) {
     router.back();
   } else {
-    router.push('/affairs/applications/applicants');
+    router.push('/affairs/gate-attendance/today');
   }
 }
 

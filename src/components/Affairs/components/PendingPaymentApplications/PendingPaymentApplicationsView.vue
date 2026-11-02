@@ -21,6 +21,7 @@
       v-model:search-query="searchQuery"
       v-model:selected-course="selectedCourse"
       v-model:selected-category="selectedCategory"
+      v-model:view-mode="viewMode"
       :course-options="courseOptions"
       :category-options="categoryOptions"
       :total-count="applications.length"
@@ -30,9 +31,12 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- 4. حاوية الجدول المشترك والباجينيشن -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden">
-      <!-- جدول البيانات الرئيسي المستند إلى AppTable العام -->
+    <!-- 4. عرض البيانات: جدول بيانات أو شبكة كروت -->
+    <!-- أ. وضع جدول البيانات (Table View) -->
+    <div
+      v-if="viewMode === 'table'"
+      class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden"
+    >
       <PendingPaymentTable
         :applications="paginatedApplications"
         :is-filtered="Boolean(searchQuery || selectedCourse || selectedCategory || statusFilter !== 'all')"
@@ -42,7 +46,6 @@
         @clear-filters="clearFilters"
       />
 
-      <!-- شريط الباجينيشن العام المستند إلى AppPagination -->
       <AppPagination
         v-if="filteredApplications.length > 0"
         v-model:current-page="currentPage"
@@ -51,6 +54,30 @@
         :per-page-options="perPageOptions"
         item-label="طلب سداد"
       />
+    </div>
+
+    <!-- ب. وضع شبكة الكروت (Cards Grid View) -->
+    <div v-else class="space-y-4">
+      <PendingPaymentCardsGrid
+        :applications="paginatedApplications"
+        @open-details="openDetails"
+        @record-payment="openDetails"
+        @extend-deadline="openReschedule"
+        @cancel-application="openCancel"
+      />
+
+      <div
+        v-if="filteredApplications.length > 0"
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-xs"
+      >
+        <AppPagination
+          v-model:current-page="currentPage"
+          v-model:items-per-page="itemsPerPage"
+          :total-items="filteredApplications.length"
+          :per-page-options="perPageOptions"
+          item-label="طلب سداد"
+        />
+      </div>
     </div>
 
     <!-- 5. تنبيه تأكيد الإجراء العائم (Floating Toast Alert) -->
@@ -118,6 +145,7 @@ import PendingPaymentHeader from './utils/PendingPaymentHeader.vue';
 import PendingPaymentStats from './utils/PendingPaymentStats.vue';
 import PendingPaymentFilters from './utils/PendingPaymentFilters.vue';
 import PendingPaymentTable from './utils/PendingPaymentTable.vue';
+import PendingPaymentCardsGrid from './utils/PendingPaymentCardsGrid.vue';
 import ExtendDeadlineModal from './utils/ExtendDeadlineModal.vue';
 import CancelPaymentApplicationModal from './utils/CancelPaymentApplicationModal.vue';
 import TraineeDetailsModal from '@/shared/ui/Modals/TraineeDetailsModal.vue';
@@ -138,6 +166,7 @@ const statusFilter = ref('all'); // 'all' | 'active' | 'overdue'
 const searchQuery = ref('');
 const selectedCourse = ref(null);
 const selectedCategory = ref(null);
+const viewMode = ref('table');
 
 // خيارات القوائم المنسدلة
 const categoryOptions = [

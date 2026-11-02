@@ -121,14 +121,16 @@
             <!-- اختيار المحاضر -->
             <div class="space-y-1.5">
               <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                المحاضر المعتمد (InstructorId) <span class="text-rose-500">*</span>
+                المحاضر المعتمد (المسؤول عن الشرح) <span class="text-rose-500">*</span>
               </label>
               <Select
                 v-model="form.instructorId"
                 :options="instructorOptions"
                 option-label="name"
                 option-value="id"
-                placeholder="اختر المحاضر..."
+                filter
+                filter-placeholder="ابحث بالاسم أو التخصص..."
+                placeholder="اختر المحاضر من قائمة المحاضرين..."
                 class="w-full text-xs font-bold rounded-xl h-10 flex items-center"
               />
               <p v-if="selectedInstructor" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -546,12 +548,16 @@ function computeNextRoundNumber(courseId) {
   return nextNum;
 }
 
-// مراقبة تغيير الدورة لإعادة الحساب الفوري لرقم الدفعة
+// مراقبة تغيير الدورة لإعادة الحساب الفوري لرقم الدفعة وتحديد المحاضر المعتمد
 watch(
   () => form.value.courseId,
   (newCourseId) => {
     if (newCourseId) {
       computeNextRoundNumber(newCourseId);
+      const targetCourse = props.courses.find((c) => Number(c.id) === Number(newCourseId));
+      if (targetCourse?.instructorId) {
+        form.value.instructorId = targetCourse.instructorId;
+      }
     }
   }
 );
@@ -588,12 +594,20 @@ function initForm() {
 
   if (targetCourseId) {
     computeNextRoundNumber(targetCourseId);
+    const targetCourse = props.courses.find((c) => Number(c.id) === Number(targetCourseId));
+    if (targetCourse?.instructorId) {
+      form.value.instructorId = targetCourse.instructorId;
+    }
   }
 }
 
 function onCourseSelected() {
   if (form.value.courseId) {
     computeNextRoundNumber(form.value.courseId);
+    const targetCourse = props.courses.find((c) => Number(c.id) === Number(form.value.courseId));
+    if (targetCourse?.instructorId) {
+      form.value.instructorId = targetCourse.instructorId;
+    }
   }
 }
 
